@@ -4,7 +4,7 @@
 
 Một tệp HTML duy nhất, chạy trực tiếp trên trình duyệt (máy tính, điện thoại cấu hình thấp), không cần cài đặt, không cần mạng sau khi tải.
 
-- **Chơi ngay:** https://ntatthanh.github.io/hanhtrinhcongnghe/ *(sau khi bật GitHub Pages – xem mục 9)*
+- **Chơi ngay:** https://nhainam-congnghe.github.io/hanhtrinhcongnghe/ *(sau khi bật GitHub Pages – xem mục 9)*
 - **Tác giả:** Thầy Nguyễn Hải Nam – Trường PTDTBT TH&THCS Lâm Hoá, xã Tuyên Lâm
 - **Đề tài sáng kiến:** “Đổi mới phương pháp dạy học môn Công nghệ THCS thông qua xây dựng và sử dụng trò chơi nhập vai 2D”
 
