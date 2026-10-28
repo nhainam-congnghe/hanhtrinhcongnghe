@@ -1,0 +1,1117 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Hành Trình Công Nghệ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&family=Chakra+Petch:wght@600;700&display=swap">
+<style>
+/* Concept: bản vẽ kĩ thuật. Nền xanh blueprint, nét đường tâm chấm gạch, màu cam an toàn lao động làm điểm nhấn.
+   Game cố ý giữ một giao diện tối duy nhất, mọi màu đều khai báo tường minh. */
+:root{
+  color-scheme:dark;
+  --bg:#08182a; --panel:#0e2842; --panel2:#143a5e; --line:#4f8fc0; --paper:#eaf3fb; --mute:#9db8d0;
+  --accent:#ff7a1a; --accent-ink:#1c0d00; --good:#3ddc97; --bad:#ff6b6b; --gold:#ffd24a;
+  --c0:#ffd24a; --c1:#59c3ff; --c2:#ff8fb1; --c3:#8be28b; --c4:#c59bff;
+  --f-disp:'Chakra Petch','Segoe UI',system-ui,sans-serif;
+  --f-body:'Be Vietnam Pro',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+html,body{height:100%}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--paper);font-family:var(--f-body);font-size:15px;line-height:1.5;overflow:hidden;-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+#app{position:relative;height:100%;width:100%}
+.screen{position:absolute;inset:0;overflow:auto}
+.gut{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.grid-bg{background-color:var(--bg);background-image:linear-gradient(rgba(120,180,230,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(120,180,230,.09) 1px,transparent 1px);background-size:32px 32px}
+h1,h2,h3{font-family:var(--f-disp);margin:0;text-wrap:balance}
+.btn{border:0;border-radius:6px;padding:12px 20px;background:var(--accent);color:var(--accent-ink);font-family:var(--f-disp);font-weight:700;font-size:16px;letter-spacing:.04em;text-transform:uppercase;min-height:46px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--paper);border:1.5px solid var(--line)}
+.btn.good{background:var(--good);color:#032014}
+.btn:active:not(:disabled){transform:translateY(1px)}
+
+/* start / end */
+.wrap{max-width:620px;margin:0 auto;padding-block:28px 40px;display:flex;flex-direction:column;gap:22px}
+.kicker{font-family:var(--f-disp);font-weight:600;letter-spacing:.18em;text-transform:uppercase;font-size:12px;color:var(--accent)}
+.title{font-size:clamp(34px,9vw,58px);line-height:1;font-weight:700;text-transform:uppercase;letter-spacing:.01em}
+.title span{display:block;color:var(--accent)}
+.lead{color:var(--mute);max-width:46ch;margin:0}
+.field{display:flex;flex-direction:column;gap:8px}
+.field>label,.field>.lbl{font-family:var(--f-disp);font-weight:600;letter-spacing:.12em;text-transform:uppercase;font-size:12px;color:var(--mute)}
+.grades{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.gbtn{border:1.5px solid var(--line);background:var(--panel);border-radius:6px;padding:10px 0 8px;font-family:var(--f-disp);font-weight:700;font-size:30px;line-height:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.gbtn small{font-family:var(--f-body);font-weight:400;font-size:11px;color:var(--mute)}
+.gbtn[aria-pressed=true]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.gbtn[aria-pressed=true] small{color:var(--accent-ink)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.pill{font-size:12px;border:1px dashed var(--line);border-radius:999px;padding:3px 10px;color:var(--paper)}
+input[type=text]{background:var(--panel);border:1.5px solid var(--line);border-radius:6px;color:var(--paper);padding:12px 14px;font:inherit;font-size:17px;width:100%}
+.avatars{display:flex;gap:8px;flex-wrap:wrap}
+.av{width:52px;height:52px;border-radius:6px;border:1.5px solid var(--line);background:var(--panel);font-size:28px;line-height:1;display:grid;place-items:center}
+.av[aria-pressed=true]{border-color:var(--accent);box-shadow:0 0 0 3px rgba(255,122,26,.35);background:var(--panel2)}
+.err{color:var(--bad);min-height:1.4em;font-size:14px;margin:0}
+.tblock{border:1.5px solid var(--line);display:grid;grid-template-columns:1fr;font-size:13px;margin-top:6px}
+.tblock div{padding:8px 12px;border-top:1px solid var(--line)}
+.tblock div:first-child{border-top:0}
+.tblock b{font-family:var(--f-disp);letter-spacing:.06em;color:var(--accent);font-size:11px;text-transform:uppercase;display:block}
+.lb{width:100%;border-collapse:collapse;font-size:14px}
+.lb th{font-family:var(--f-disp);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);text-align:left;padding:4px 6px;border-bottom:1px solid var(--line)}
+.lb td{padding:6px;border-bottom:1px solid rgba(79,143,192,.25)}
+.lb td:last-child,.lb th:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.lb tr.me td{color:var(--gold)}
+
+/* game */
+#game{overflow:hidden}
+#cv{position:absolute;inset:0;touch-action:none;display:block}
+#hud{position:absolute;top:env(safe-area-inset-top,0px);left:0;right:0;padding-top:10px;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+#hud .bar{display:flex;align-items:center;justify-content:space-between;gap:8px}
+#hud .pl{display:flex;align-items:center;gap:8px;min-width:0;background:rgba(8,24,42,.82);border:1px solid var(--line);border-radius:6px;padding:4px 10px 4px 6px}
+#hud .pl .em{font-size:22px;line-height:1}
+#hud .pl .nm{font-family:var(--f-disp);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:34vw}
+#hud .pl small{color:var(--mute);font-size:11px;display:block;line-height:1.1}
+#hud .st{display:flex;align-items:center;gap:6px;pointer-events:auto}
+.chipst{background:rgba(8,24,42,.82);border:1px solid var(--line);border-radius:6px;padding:5px 10px;font-family:var(--f-disp);font-weight:700;display:flex;gap:6px;align-items:center;font-variant-numeric:tabular-nums}
+.hearts{letter-spacing:1px;color:var(--bad)}
+.hearts i{font-style:normal}
+.hearts i.off{color:#3a4b5d}
+.score{color:var(--gold)}
+.ibtn{width:38px;height:38px;border-radius:6px;border:1px solid var(--line);background:rgba(8,24,42,.82);display:grid;place-items:center;font-family:var(--f-disp);font-weight:700;font-size:15px}
+#prog{position:relative;height:14px;border:1px solid var(--line);border-radius:3px;background:rgba(8,24,42,.82);margin-top:2px}
+#prog .tick{position:absolute;top:2px;bottom:2px;width:3px;background:var(--accent);transform:translateX(-1px)}
+#prog .tick.done{background:var(--good)}
+#prog .tick.boss{width:5px;background:var(--gold)}
+#pdot{position:absolute;top:-3px;width:10px;height:18px;background:var(--paper);border-radius:2px;transform:translateX(-5px)}
+#zlabel{font-size:12px;color:var(--paper);text-shadow:0 1px 2px #000;font-family:var(--f-disp);letter-spacing:.06em;text-transform:uppercase}
+#tip{position:absolute;left:0;right:0;bottom:calc(150px + env(safe-area-inset-bottom,0px));display:flex;justify-content:center;pointer-events:none}
+#tip .tb{max-width:460px;background:var(--paper);color:#0a1a2c;border-radius:10px;padding:10px 14px;font-size:14px;display:flex;gap:10px;box-shadow:0 6px 24px rgba(0,0,0,.45)}
+#tip .tb span:first-child{font-size:26px;line-height:1}
+#banner{position:absolute;left:0;right:0;top:34%;display:flex;justify-content:center;pointer-events:none}
+#banner .bb{background:rgba(8,24,42,.92);border:1.5px solid var(--accent);padding:12px 22px;text-align:center;animation:bn 3.2s ease both}
+#banner small{display:block;color:var(--accent);font-family:var(--f-disp);letter-spacing:.2em;text-transform:uppercase;font-size:12px}
+#banner b{font-family:var(--f-disp);font-size:clamp(20px,5vw,30px)}
+@keyframes bn{0%{opacity:0;transform:translateY(8px)}12%,80%{opacity:1;transform:none}100%{opacity:0}}
+#joy{position:absolute;left:max(18px,env(safe-area-inset-left,0px));bottom:calc(22px + env(safe-area-inset-bottom,0px));width:128px;height:128px;border-radius:50%;border:2px solid var(--line);background:rgba(14,40,66,.6);touch-action:none;display:none}
+#joy .kn{position:absolute;left:50%;top:50%;width:54px;height:54px;border-radius:50%;background:var(--accent);transform:translate(-50%,-50%);box-shadow:0 2px 8px rgba(0,0,0,.5)}
+.touch #joy{display:block}
+#hint{position:absolute;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom,0px));text-align:center;color:var(--mute);font-size:13px;pointer-events:none;text-shadow:0 1px 2px #000}
+.touch #hint{display:none}
+
+/* overlays */
+.overlay{position:absolute;inset:0;background:rgba(3,10,20,.78);display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));z-index:5}
+.card{width:100%;max-width:700px;max-height:100%;overflow:auto;background:var(--panel);border:1.5px solid var(--line);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.mhead{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;font-size:12px;color:var(--mute);font-family:var(--f-disp);letter-spacing:.08em;text-transform:uppercase}
+.mhead .tag{background:var(--accent);color:var(--accent-ink);padding:2px 8px;border-radius:3px;font-weight:700}
+.mhead .sp{flex:1}
+#mprompt{font-size:clamp(17px,4.4vw,21px);line-height:1.35;font-weight:600}
+#mbody{display:flex;flex-direction:column;gap:8px}
+.fb{border-radius:6px;padding:10px 12px;font-size:14px;border:1.5px solid}
+.fb.ok{border-color:var(--good);background:rgba(61,220,151,.1)}
+.fb.bad{border-color:var(--bad);background:rgba(255,107,107,.1)}
+.fb.info{border-color:var(--gold);background:rgba(255,210,74,.08)}
+.fb b{display:block;margin-bottom:2px}
+.mfoot{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.mfoot .btn{flex:0 1 auto}
+
+/* challenge parts */
+.opt{display:flex;gap:10px;align-items:flex-start;text-align:left;background:var(--panel2);border:1.5px solid var(--line);border-radius:6px;padding:10px 12px;width:100%}
+.opt .k{font-family:var(--f-disp);font-weight:700;color:var(--accent);min-width:1.2em}
+.opt:hover:not(:disabled){border-color:var(--paper)}
+.opt.ok,.cell.ok,.oslot.ok,.fslot.ok,.wl.ok,.row.ok{border-color:var(--good);background:rgba(61,220,151,.16)}
+.opt.bad,.cell.bad,.oslot.bad,.fslot.bad,.wl.bad,.row.bad,.sbtn.bad,.mi.bad{border-color:var(--bad);background:rgba(255,107,107,.16)}
+.opt:disabled{cursor:default}
+.row{display:flex;flex-wrap:wrap;gap:8px 12px;justify-content:space-between;align-items:center;background:var(--panel2);border:1.5px solid transparent;border-radius:6px;padding:8px 10px}
+.row .rt{flex:1 1 220px;min-width:0}
+.tfb{display:flex;gap:6px}
+.tfo{border:1.5px solid var(--line);background:transparent;border-radius:6px;padding:6px 14px;min-width:68px;font-family:var(--f-disp);font-weight:700}
+.tfo.on{background:var(--paper);color:#0a1a2c;border-color:var(--paper)}
+.mcols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mcol{display:flex;flex-direction:column;gap:8px;min-width:0}
+.mi{text-align:left;background:var(--panel2);border:1.5px solid var(--line);border-radius:6px;padding:9px 10px;font-size:14px;min-height:48px;overflow-wrap:anywhere}
+.mi.sel{border-color:var(--paper);box-shadow:0 0 0 2px var(--paper)}
+.mi.paired{border-color:var(--pc);box-shadow:inset 5px 0 0 var(--pc)}
+.c0{--pc:var(--c0)}.c1{--pc:var(--c1)}.c2{--pc:var(--c2)}.c3{--pc:var(--c3)}.c4{--pc:var(--c4)}
+.oslots{display:flex;flex-direction:column;gap:6px}
+.oslot{display:flex;gap:10px;align-items:center;text-align:left;min-height:44px;background:transparent;border:1.5px dashed var(--line);border-radius:6px;padding:6px 10px}
+.oslot b{font-family:var(--f-disp);color:var(--accent);min-width:1.2em}
+.oslot.fill{border-style:solid;background:var(--panel2)}
+.opool{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--panel2);border:1.5px solid var(--line);border-radius:6px;padding:8px 12px;text-align:left;font-size:14px}
+.chip.lt{font-family:var(--f-disp);font-weight:700;font-size:20px;min-width:44px;text-align:center;padding:6px 8px}
+.fsent{font-size:17px;line-height:2.4}
+.fslot{display:inline-block;vertical-align:baseline;border:0;border-bottom:2.5px solid var(--accent);background:rgba(255,122,26,.12);padding:0 10px;margin:0 4px;min-width:72px;font-weight:700;border-radius:4px 4px 0 0;color:var(--paper);line-height:1.8}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.cell{min-height:64px;background:var(--panel2);border:1.5px solid var(--line);border-radius:6px;padding:8px;font-size:14px}
+.cell.on{border-color:var(--paper);box-shadow:inset 0 0 0 2px var(--paper)}
+.cell.on.ok{box-shadow:inset 0 0 0 2px var(--good)}
+.note{font-size:13px;color:var(--mute)}
+.sprog{font-size:13px;color:var(--mute);font-variant-numeric:tabular-nums}
+.scard{background:var(--paper);color:#0a1a2c;border-radius:8px;padding:22px 14px;text-align:center;font-family:var(--f-disp);font-weight:700;font-size:24px;min-height:84px;display:grid;place-items:center}
+.scard.shake{animation:sh .35s}
+@keyframes sh{20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+.sopts{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.sbtn{background:var(--panel2);border:1.5px solid var(--line);border-radius:6px;padding:12px 8px;font-weight:700;min-height:50px}
+.wslots{display:flex;flex-wrap:wrap;gap:14px}
+.wg{display:flex;gap:6px}
+.wl{width:42px;height:50px;border:1.5px dashed var(--line);border-radius:6px;background:transparent;font-family:var(--f-disp);font-weight:700;font-size:22px;padding:0}
+.wl.fill{border-style:solid;background:var(--panel2)}
+
+/* end */
+.cert{border:2px solid var(--gold);padding:18px;display:flex;flex-direction:column;gap:12px;background:linear-gradient(180deg,rgba(255,210,74,.07),transparent)}
+.cert .who{font-family:var(--f-disp);font-weight:700;font-size:clamp(26px,7vw,38px);line-height:1.1;overflow-wrap:anywhere}
+.stars{color:var(--gold);font-size:30px;letter-spacing:4px}
+.rank{font-family:var(--f-disp);font-weight:700;font-size:20px}
+.rank span{color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+.stats div{border:1px solid var(--line);padding:8px 10px}
+.stats b{display:block;font-family:var(--f-disp);font-size:22px;font-variant-numeric:tabular-nums}
+.stats small{color:var(--mute);font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.zr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:center;font-size:14px}
+.zr .bar{grid-column:1/-1;height:8px;background:rgba(79,143,192,.25);border-radius:2px}
+.zr .bar i{display:block;height:100%;background:var(--good);border-radius:2px}
+.zr .bar i.low{background:var(--accent)}
+.zr b{font-variant-numeric:tabular-nums}
+.row2{display:flex;gap:10px;flex-wrap:wrap}
+@media (max-width:560px){
+  .overlay{align-items:flex-end}
+  .card{border-radius:12px 12px 0 0;max-height:94%}
+  .mcols{gap:8px}
+}
+@media (prefers-reduced-motion:reduce){#banner .bb{animation:none}.scard.shake{animation:none}}
+</style>
+
+<div id="app">
+  <section id="start" class="screen grid-bg">
+    <div class="wrap gut">
+      <div>
+        <div class="kicker">Công nghệ 6 – 9 · Kết nối tri thức</div>
+        <h1 class="title">Hành trình<span>Công nghệ</span></h1>
+      </div>
+      <p class="lead">Chọn lớp, đặt biệt danh rồi lên đường. Mỗi chương là một vùng đất, mỗi cổng chắn là một thử thách kiến thức. Vượt hết các cổng để nhận xếp loại Kĩ sư Công nghệ.</p>
+      <div class="field">
+        <span class="lbl" id="lbg">Lớp đang học</span>
+        <div class="grades" role="group" aria-labelledby="lbg" id="grades"></div>
+        <div class="chips" id="zprev"></div>
+      </div>
+      <div class="field">
+        <label for="nick">Biệt danh</label>
+        <input type="text" id="nick" maxlength="16" autocomplete="off" placeholder="Ví dụ: Minh Thợ Điện">
+      </div>
+      <div class="field">
+        <span class="lbl" id="lav">Nhân vật</span>
+        <div class="avatars" role="group" aria-labelledby="lav" id="avatars"></div>
+      </div>
+      <p class="err" id="err" role="alert"></p>
+      <button class="btn" id="go" type="button">Bắt đầu hành trình</button>
+      <div class="field" id="lbbox" hidden>
+        <span class="lbl">Bảng vàng trên máy này</span>
+        <table class="lb"><thead><tr><th>Biệt danh</th><th>Lớp</th><th>Điểm</th></tr></thead><tbody id="lbbody"></tbody></table>
+      </div>
+      <div class="tblock">
+        <div><b>Tác giả</b>Thầy Nguyễn Hải Nam</div>
+        <div><b>Đơn vị</b>Trường PTDTBT TH&amp;THCS Lâm Hoá</div>
+        <div><b>Bản thử nghiệm</b>Nội dung bám theo sách Công nghệ 6, 7, 8, 9 bộ Kết nối tri thức với cuộc sống</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="game" class="screen" hidden>
+    <canvas id="cv"></canvas>
+    <div id="hud" class="gut">
+      <div class="bar">
+        <div class="pl"><span class="em" id="hav"></span><div style="min-width:0"><span class="nm" id="hnm"></span><small id="hgr"></small></div></div>
+        <div class="st">
+          <div class="chipst hearts" id="hearts" aria-label="Năng lượng"></div>
+          <div class="chipst score"><span aria-hidden="true">★</span><span id="hsc">0</span></div>
+          <button class="ibtn" id="bsnd" type="button" aria-label="Bật hoặc tắt âm thanh">♪</button>
+          <button class="ibtn" id="bpause" type="button" aria-label="Tạm dừng">II</button>
+        </div>
+      </div>
+      <div id="prog"><div id="pdot"></div></div>
+      <div id="zlabel"></div>
+    </div>
+    <div id="tip" hidden><div class="tb"><span>🤖</span><span id="tiptx"></span></div></div>
+    <div id="banner" hidden><div class="bb"><small id="bnk"></small><b id="bnt"></b></div></div>
+    <div id="joy" aria-hidden="true"><div class="kn" id="knob"></div></div>
+    <div id="hint">Di chuyển bằng phím mũi tên hoặc WASD · chạm vào cổng chắn để giải thử thách</div>
+  </section>
+
+  <section id="end" class="screen grid-bg" hidden></section>
+
+  <div id="modal" class="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="mprompt">
+    <div class="card">
+      <div class="mhead"><span id="mzone"></span><span class="tag" id="mtype"></span><span class="sp"></span><span id="mheart"></span><span id="mtime"></span></div>
+      <h2 id="mprompt"></h2>
+      <div id="mbody"></div>
+      <div id="mfb" class="fb" hidden></div>
+      <div class="mfoot">
+        <button class="btn ghost" id="back" type="button">Quay lại</button>
+        <button class="btn" id="chk" type="button" disabled>Kiểm tra</button>
+        <button class="btn good" id="cont" type="button" hidden>Tiếp tục</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="pause" class="overlay" hidden role="dialog" aria-modal="true" aria-label="Tạm dừng">
+    <div class="card" style="max-width:420px">
+      <h2 style="font-size:24px">Tạm dừng</h2>
+      <p class="note" style="margin:0">Về trang chủ sẽ kết thúc lượt chơi hiện tại.</p>
+      <div class="mfoot"><button class="btn ghost" id="phome" type="button">Về trang chủ</button><button class="btn" id="pres" type="button">Chơi tiếp</button></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var $=function(s){return document.querySelector(s)};
+function h(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function nfc(s){return s.normalize?s.normalize('NFC'):s}
+
+/* ====================== NỘI DUNG ====================== */
+var Q=function(q,o,a,e){return{t:'quiz',q:q,o:o,a:a,e:e||''}};
+var TF=function(q,s,e){return{t:'tf',q:q,s:s,e:e||''}};
+var MA=function(q,p,e){return{t:'match',q:q,p:p,e:e||''}};
+var OR=function(q,s,e){return{t:'order',q:q,s:s,e:e||''}};
+var FI=function(q,b,w,e){return{t:'fill',q:q,b:b,w:w,e:e||''}};
+var GR=function(q,c,a,e){return{t:'grid',q:q,c:c,a:a,e:e||''}};
+var SO=function(q,k,i,e){return{t:'sort',q:q,k:k,i:i,e:e||''}};
+var SC=function(q,w,e){return{t:'scramble',q:q,w:nfc(w),e:e||''}};
+
+var DATA={
+6:{name:'Công nghệ 6',boss:'Cổng Thợ cả',zones:[
+ {name:'Nhà ở',em:['🏠','🏡','🏢','🌳','🪴'],tip:'Nhà ở là nơi trú ngụ và sinh hoạt của gia đình. Nhà thông minh có thiết bị điều khiển tự động hoặc từ xa.',ch:[
+  Q('Vai trò chính của nhà ở đối với con người là gì?',['Chỉ để trang trí và khoe tài sản','Là nơi trú ngụ, bảo vệ con người trước tác động của thiên nhiên và đáp ứng nhu cầu sinh hoạt','Chỉ để chứa đồ đạc','Chỉ dành cho người cao tuổi'],1,'Nhà ở giúp tránh nắng, mưa, gió, rét và là nơi sinh hoạt, nghỉ ngơi của cả gia đình.'),
+  MA('Ghép kiểu nhà với đặc điểm phù hợp.',[['Nhà sàn','Cột nâng sàn cao, thường ở vùng núi'],['Nhà nổi','Làm trên mặt nước, phổ biến ở vùng sông nước'],['Nhà chung cư','Nhiều tầng, nhiều hộ gia đình, ở đô thị'],['Nhà ở nông thôn','Thường có sân, vườn rộng']],'Mỗi vùng miền có kiểu nhà phù hợp với địa hình và khí hậu.'),
+  TF('Chọn Đúng hoặc Sai cho từng phát biểu về ngôi nhà thông minh.',[['Thiết bị trong nhà thông minh có thể điều khiển tự động hoặc từ xa.',true],['Ngôi nhà thông minh chỉ hoạt động khi có người ở trong nhà.',false],['Hệ thống chiếu sáng thông minh giúp tiết kiệm năng lượng.',true],['Ngôi nhà thông minh không có hệ thống an ninh, an toàn.',false]],'Nhà thông minh có ba đặc điểm: tiện ích, an ninh – an toàn và tiết kiệm năng lượng.')]},
+ {name:'Bảo quản và chế biến thực phẩm',em:['🍎','🥕','🍚','🥩','🥬'],tip:'Ăn đa dạng các nhóm thực phẩm để đủ chất đạm, chất bột đường, chất béo, vitamin và khoáng.',ch:[
+  SO('Phân loại thực phẩm theo chất dinh dưỡng chính.',['Chất đạm','Chất bột đường','Vitamin và khoáng'],[['Thịt bò',0],['Gạo',1],['Cam',2],['Trứng',0],['Khoai lang',1],['Rau cải',2]],'Thịt, trứng, cá giàu chất đạm; gạo, khoai là nguồn chất bột đường; rau, quả giàu vitamin và khoáng.'),
+  FI('Bảo quản thực phẩm trong tủ lạnh là phương pháp làm ___ ; phơi cá, mực là phương pháp làm ___ ; ướp cá với ___ giúp thực phẩm để được lâu.',['lạnh','khô','muối'],['lạnh','khô','muối','rán'],'Làm lạnh, làm khô và ướp muối đều giúp hạn chế vi khuẩn phát triển.'),
+  MA('Ghép phương pháp chế biến với cách thực hiện.',[['Luộc','Làm chín thực phẩm trong nước sôi'],['Rán','Làm chín thực phẩm trong dầu, mỡ nóng'],['Nướng','Làm chín thực phẩm bằng sức nóng trực tiếp từ lò hoặc than'],['Trộn dầu giấm','Không dùng nhiệt; trộn rau với dầu ăn, giấm và gia vị']],'Luộc, rán, nướng cần dùng nhiệt; trộn dầu giấm là chế biến không dùng nhiệt.')]},
+ {name:'Trang phục và thời trang',em:['👕','👗','🧵','🧥','👟'],tip:'Chọn trang phục hợp vóc dáng, lứa tuổi và hoàn cảnh; nhớ phân loại quần áo trước khi giặt.',ch:[
+  Q('Loại vải nào có nguồn gốc thiên nhiên, mặc thoáng mát, thấm hút mồ hôi tốt nhưng dễ nhàu?',['Vải sợi bông (cotton)','Vải sợi polyester','Vải nylon','Vải sợi tổng hợp pha'],0,'Vải sợi bông lấy từ cây bông, mềm, thấm hút tốt nhưng dễ nhàu.'),
+  OR('Sắp xếp các bước giặt quần áo bằng tay theo đúng thứ tự.',['Phân loại quần áo, kiểm tra túi áo','Ngâm quần áo với nước xà phòng','Giặt, vò kĩ từng chiếc','Xả sạch bằng nước','Phơi quần áo cho khô'],'Phân loại trước giúp tránh phai màu; xả sạch xà phòng rồi mới phơi.'),
+  TF('Đúng hay Sai khi lựa chọn và bảo quản trang phục?',[['Nên chọn trang phục phù hợp với vóc dáng, lứa tuổi và hoàn cảnh sử dụng.',true],['Quần áo trắng và quần áo màu đậm nên giặt chung để tiết kiệm nước.',false],['Phong cách thời trang thể hiện sở thích và cá tính của người mặc.',true],['Quần áo còn ướt có thể gấp cất ngay vào tủ.',false]],'Quần áo cần được phân loại khi giặt và phơi khô hẳn trước khi cất.')]},
+ {name:'Đồ dùng điện trong gia đình',em:['💡','🔌','🔋','🍚','🌀'],tip:'Dùng điện an toàn: tay khô, dây không hở, rút phích bằng cách cầm vào phích chứ không kéo dây.',ch:[
+  GR('Chọn tất cả đồ dùng điện biến điện năng chủ yếu thành nhiệt năng.',['Nồi cơm điện','Quạt điện','Bàn là','Đèn LED','Bếp hồng ngoại','Máy xay sinh tố','Ấm đun nước điện','Loa'],[0,2,4,6],'Nồi cơm điện, bàn là, bếp hồng ngoại, ấm đun nước dùng bộ phận sinh nhiệt để toả nhiệt.'),
+  OR('Sắp xếp các bước sử dụng nồi cơm điện.',['Vo gạo, cho vào nồi và đổ nước đúng mức','Lau khô bên ngoài nồi rồi đặt vào thân nồi','Đậy nắp, cắm phích điện vào ổ cắm','Nhấn nút nấu','Rút phích cắm khi dùng xong'],'Đáy nồi phải khô và đặt đúng khớp để tiếp xúc tốt với bộ phận sinh nhiệt.'),
+  TF('Đúng hay Sai khi sử dụng đồ dùng điện?',[['Không dùng tay ướt chạm vào ổ cắm điện.',true],['Có thể rút phích cắm bằng cách kéo mạnh dây điện.',false],['Khi dây điện của đồ dùng bị hở, cần ngắt điện và thay hoặc sửa trước khi dùng.',true],['Cắm nhiều thiết bị công suất lớn vào cùng một ổ cắm là an toàn.',false]],'Tay ướt, dây hở, kéo dây khi rút phích và quá tải ổ cắm đều gây nguy hiểm.')]}
+],bossq:[
+  Q('Ngôi nhà thông minh có đặc điểm nào sau đây?',['Tiện ích, an ninh – an toàn, tiết kiệm năng lượng','Chỉ có hệ thống chiếu sáng','Phải xây bằng vật liệu đặc biệt','Không dùng điện'],0,'Ba đặc điểm chính của ngôi nhà thông minh là tiện ích, an ninh – an toàn và tiết kiệm năng lượng.'),
+  Q('Nhóm chất dinh dưỡng nào giúp cơ thể phát triển, tạo cơ bắp và thay thế tế bào cũ?',['Chất đạm','Chất béo','Chất bột đường','Vitamin'],0,'Chất đạm là nguyên liệu xây dựng và tái tạo tế bào.'),
+  Q('Trong các loại đèn sau, loại nào tiết kiệm điện và có tuổi thọ cao nhất?',['Đèn sợi đốt','Đèn huỳnh quang','Đèn LED','Đèn dầu'],2,'Đèn LED có hiệu suất phát sáng cao và tuổi thọ dài hơn đèn sợi đốt và đèn huỳnh quang.'),
+  Q('Khi thấy người bị điện giật, việc cần làm đầu tiên là gì?',['Dùng tay kéo người đó ra','Ngắt nguồn điện (cầu dao, aptomat) rồi mới cứu','Tạt nước vào người bị nạn','Chạy đi gọi người, không làm gì thêm'],1,'Phải ngắt nguồn điện hoặc dùng vật cách điện khô tách nạn nhân, không chạm trực tiếp vào người bị nạn.')]},
+
+7:{name:'Công nghệ 7',boss:'Cổng Nông trại',zones:[
+ {name:'Trồng trọt',em:['🌱','🌾','🥬','🌽','🍅'],tip:'Trồng trọt cung cấp lương thực, thực phẩm, thức ăn chăn nuôi và nguyên liệu cho công nghiệp chế biến.',ch:[
+  Q('Vai trò nào sau đây KHÔNG phải của trồng trọt?',['Cung cấp lương thực, thực phẩm cho con người','Cung cấp thức ăn cho chăn nuôi','Cung cấp nguyên liệu cho công nghiệp chế biến','Cung cấp thép và xi măng cho xây dựng'],3,'Trồng trọt cung cấp lương thực, thực phẩm, thức ăn chăn nuôi, nguyên liệu chế biến và nông sản xuất khẩu.'),
+  SO('Phân loại cây trồng theo nhóm.',['Cây lương thực','Cây ăn quả','Cây công nghiệp'],[['Lúa',0],['Ngô',0],['Xoài',1],['Cam',1],['Cà phê',2],['Cao su',2]],'Lúa, ngô là cây lương thực; xoài, cam là cây ăn quả; cà phê, cao su là cây công nghiệp.'),
+  FI('Chiết cành là tạo ___ cho cành khi cành còn dính trên ___ ; sau đó cắt cành đem trồng.',['rễ','cây mẹ'],['rễ','cây mẹ','hạt','lá'],'Cành được chiết ra rễ ngay trên cây mẹ rồi mới cắt để trồng thành cây mới.')]},
+ {name:'Lâm nghiệp',em:['🌲','🌳','🍃','🦌','🍄'],tip:'Rừng ở nước ta gồm rừng sản xuất, rừng phòng hộ và rừng đặc dụng.',ch:[
+  TF('Đúng hay Sai khi nói về rừng?',[['Rừng có vai trò điều hoà khí hậu và bảo vệ môi trường.',true],['Rừng phòng hộ chủ yếu dùng để khai thác gỗ lấy lợi nhuận.',false],['Rừng đặc dụng dùng để bảo tồn thiên nhiên và đa dạng sinh học.',true],['Ở Việt Nam, rừng chỉ có một loại duy nhất là rừng sản xuất.',false]],'Rừng chia thành rừng sản xuất, rừng phòng hộ và rừng đặc dụng, mỗi loại có mục đích riêng.'),
+  MA('Ghép loại rừng với mục đích chính.',[['Rừng sản xuất','Cung cấp gỗ và lâm sản'],['Rừng phòng hộ','Chắn gió, chống xói mòn, bảo vệ nguồn nước'],['Rừng đặc dụng','Bảo tồn thiên nhiên và đa dạng sinh học']],'Vườn quốc gia, khu bảo tồn thiên nhiên thuộc rừng đặc dụng.'),
+  OR('Sắp xếp các bước trồng rừng bằng cây con.',['Đào hố trồng cây','Rạch bỏ túi bầu ươm','Đặt cây vào giữa hố','Lấp đất, nén chặt quanh gốc'],'Phải bỏ túi bầu trước khi đặt cây để rễ phát triển tự do, sau đó lấp đất và nén chặt.')]},
+ {name:'Chăn nuôi',em:['🐔','🐖','🐄','🐑','🌾'],tip:'Phòng bệnh hơn chữa bệnh: tiêm vắc xin, giữ vệ sinh chuồng trại và cho ăn đủ chất.',ch:[
+  SO('Phân loại vật nuôi.',['Gia súc','Gia cầm'],[['Trâu',0],['Gà',1],['Lợn',0],['Vịt',1],['Bò',0],['Ngan',1]],'Gia súc là thú nuôi như trâu, bò, lợn; gia cầm là chim nuôi như gà, vịt, ngan.'),
+  Q('Biện pháp nào giúp phòng bệnh cho vật nuôi?',['Tiêm vắc xin đầy đủ và giữ vệ sinh chuồng trại','Cho ăn thật nhiều thức ăn mỗi ngày','Nhốt chung vật nuôi khoẻ và vật nuôi bệnh','Không cần theo dõi sức khoẻ vật nuôi'],0,'Tiêm phòng, vệ sinh chuồng trại và chăm sóc tốt giúp vật nuôi ít mắc bệnh.'),
+  TF('Đúng hay Sai khi nói về chăn nuôi?',[['Chăn nuôi cung cấp thực phẩm như thịt, trứng, sữa.',true],['Chăn nuôi chỉ cung cấp thực phẩm, không cung cấp nguyên liệu cho ngành khác.',false],['Xử lí chất thải chăn nuôi (ví dụ hầm biogas) giúp bảo vệ môi trường.',true],['Vật nuôi mắc bệnh truyền nhiễm cần được cách li để tránh lây lan.',true]],'Chăn nuôi còn cung cấp da, lông, phân bón và sức kéo; cần xử lí chất thải để giữ môi trường sạch.')]},
+ {name:'Thủy sản',em:['🐟','🦐','🌊','🦀','🐠'],tip:'Nuôi cá ao gồm các bước chính: chuẩn bị ao, thả cá giống, chăm sóc, thu hoạch.',ch:[
+  SC('Gợi ý: tên gọi chung các sinh vật sống dưới nước có giá trị kinh tế như cá, tôm, cua. Sắp xếp các chữ cái.','THỦY SẢN','Thủy sản gồm khai thác thủy sản và nuôi trồng thủy sản.'),
+  GR('Chọn tất cả loài cá thường được nuôi trong ao ở nước ta.',['Cá rô phi','Cá chép','Cá mập','Cá trắm cỏ','Cá voi','Cá mè','Cá heo','Cá ngừ đại dương'],[0,1,3,5],'Rô phi, chép, trắm cỏ, mè là các loài cá nuôi ao phổ biến.'),
+  OR('Sắp xếp các bước nuôi cá ao.',['Chuẩn bị ao nuôi (vét bùn, bón vôi, lấy nước)','Chọn và thả cá giống','Cho ăn, chăm sóc, quản lí môi trường ao','Thu hoạch cá'],'Ao phải được cải tạo trước khi thả giống để cá sinh trưởng tốt.')]}
+],bossq:[
+  Q('Nhóm cây nào sau đây đều là cây công nghiệp?',['Cà phê, cao su, chè','Lúa, ngô, khoai','Cam, xoài, nhãn','Rau muống, cải, bí'],0,'Cà phê, cao su, chè được trồng để lấy nguyên liệu cho công nghiệp chế biến.'),
+  Q('Loại rừng nào chủ yếu để bảo tồn thiên nhiên và đa dạng sinh học?',['Rừng đặc dụng','Rừng sản xuất','Vườn cây ăn quả','Rừng trồng lấy gỗ'],0,'Rừng đặc dụng gồm vườn quốc gia, khu bảo tồn thiên nhiên.'),
+  Q('Biện pháp nào giúp bảo vệ môi trường trong chăn nuôi?',['Xử lí chất thải (ví dụ hầm biogas) và vệ sinh chuồng trại','Xả chất thải trực tiếp ra ao hồ','Đốt rác thải chăn nuôi ngoài trời','Không cần xử lí chất thải'],0,'Chất thải chăn nuôi cần được xử lí để tránh ô nhiễm nước, đất và không khí.'),
+  Q('Hoạt động nào sau đây thuộc nuôi trồng thủy sản?',['Nuôi tôm trong ao','Đánh bắt cá bằng lưới ngoài biển','Câu cá giải trí','Nhặt vỏ sò trên bãi biển'],0,'Nuôi trồng thủy sản là chủ động nuôi các loài thủy sản trong ao, hồ, lồng, bè.')]},
+
+8:{name:'Công nghệ 8',boss:'Cổng Kĩ sư',zones:[
+ {name:'Vẽ kĩ thuật',em:['📐','✏️','📏','🗂️','🏠'],tip:'Khổ giấy A4 là 210 × 297 mm. Hình chiếu bằng nằm dưới hình chiếu đứng.',ch:[
+  Q('Khổ giấy A4 có kích thước nào?',['297 × 210 mm','420 × 297 mm','594 × 420 mm','210 × 148 mm'],0,'Khổ A4 là 210 × 297 mm; A3 là 297 × 420 mm.'),
+  MA('Ghép tên hình chiếu với hướng chiếu.',[['Hình chiếu đứng','Nhìn từ trước vào vật thể'],['Hình chiếu bằng','Nhìn từ trên xuống'],['Hình chiếu cạnh','Nhìn từ trái sang']],'Theo phương pháp chiếu góc thứ nhất, hình chiếu bằng nằm dưới hình chiếu đứng, hình chiếu cạnh nằm bên phải hình chiếu đứng.'),
+  OR('Sắp xếp trình tự đọc bản vẽ chi tiết.',['Khung tên','Hình biểu diễn','Kích thước','Yêu cầu kĩ thuật'],'Đọc từ thông tin chung (khung tên) đến hình dạng, kích thước rồi yêu cầu kĩ thuật.')]},
+ {name:'Cơ khí',em:['⚙️','🔩','🔧','🛠️','🪛'],tip:'Tỉ số truyền i = n2/n1 = Z1/Z2 (bánh 1 là bánh dẫn, bánh 2 là bánh bị dẫn).',ch:[
+  SO('Phân loại vật liệu cơ khí.',['Vật liệu kim loại','Vật liệu phi kim loại'],[['Thép',0],['Nhôm',0],['Đồng',0],['Chất dẻo',1],['Cao su',1],['Gốm sứ',1]],'Kim loại gồm kim loại đen (thép, gang) và kim loại màu (nhôm, đồng); chất dẻo, cao su, gốm là phi kim loại.'),
+  MA('Ghép cơ cấu hoặc bộ truyền với chức năng.',[['Cơ cấu tay quay – con trượt','Biến chuyển động quay thành chuyển động tịnh tiến qua lại'],['Cơ cấu tay quay – thanh lắc','Biến chuyển động quay thành chuyển động lắc'],['Bộ truyền động đai','Truyền chuyển động quay nhờ ma sát giữa dây đai và bánh đai']],'Mỗi cơ cấu có cấu tạo và chức năng riêng trong máy.'),
+  Q('Bánh dẫn có 20 răng, bánh bị dẫn có 40 răng. Tỉ số truyền i bằng bao nhiêu?',['0,5 (bánh bị dẫn quay chậm hơn)','2 (bánh bị dẫn quay nhanh hơn)','1 (hai bánh quay như nhau)','20'],0,'i = Z1 / Z2 = 20 / 40 = 0,5, nên bánh bị dẫn quay chậm hơn bánh dẫn.')]},
+ {name:'An toàn điện',em:['⚡','🧤','⚠️','🔌','🪫'],tip:'Ngắt nguồn điện trước khi cứu người bị điện giật; không chạm trực tiếp vào nạn nhân.',ch:[
+  TF('Đúng hay Sai về nguyên nhân gây tai nạn điện?',[['Chạm trực tiếp vào vật mang điện có thể gây tai nạn điện.',true],['Đứng gần chỗ dây điện cao áp bị đứt rơi xuống đất là an toàn.',false],['Đồ dùng điện có vỏ hỏng, rò điện có thể gây điện giật.',true],['Dùng tay ướt thao tác với thiết bị điện là an toàn.',false]],'Các nguyên nhân thường gặp: chạm vào vật mang điện, rò điện, đến gần dây điện cao áp, thao tác khi tay ướt.'),
+  GR('Chọn tất cả dụng cụ giúp an toàn khi sửa chữa điện.',['Găng tay cách điện','Ủng cách điện','Kìm có cán bọc cách điện','Bút thử điện','Dây thép trần','Xô nước kim loại'],[0,1,2,3],'Dụng cụ có lớp cách điện và bút thử điện giúp thao tác an toàn hơn.'),
+  OR('Sắp xếp các bước sơ cứu người bị điện giật.',['Nhanh chóng ngắt nguồn điện (cầu dao, aptomat)','Nếu chưa ngắt được, dùng vật cách điện khô tách nạn nhân khỏi nguồn điện','Đặt nạn nhân nằm nơi thoáng, kiểm tra hô hấp và tim','Hô hấp nhân tạo, ép tim ngoài lồng ngực nếu cần','Gọi cấp cứu, đưa nạn nhân đến cơ sở y tế'],'Luôn bảo đảm an toàn cho bản thân trước khi sơ cứu.')]},
+ {name:'Kĩ thuật điện',em:['🔌','💡','📟','🔋','🌡️'],tip:'Mạch điện gồm nguồn điện, thiết bị đóng cắt, thiết bị bảo vệ, tải và dây dẫn.',ch:[
+  MA('Ghép bộ phận của mạch điện với chức năng.',[['Nguồn điện','Cung cấp điện năng cho mạch'],['Thiết bị đóng cắt','Đóng, ngắt dòng điện trong mạch'],['Thiết bị bảo vệ','Ngắt mạch khi quá tải hoặc ngắn mạch'],['Tải tiêu thụ','Biến điện năng thành dạng năng lượng khác']],'Mỗi bộ phận đảm nhận một chức năng trong mạch điện.'),
+  Q('Mô đun cảm biến ánh sáng thường dùng để làm gì?',['Nhận biết cường độ ánh sáng để điều khiển thiết bị, ví dụ bật đèn khi trời tối','Đo độ ẩm của đất','Đo nhiệt độ cơ thể','Tạo ra nguồn điện cho mạch'],0,'Cảm biến ánh sáng biến sự thay đổi ánh sáng thành tín hiệu điện cho mạch điều khiển.'),
+  SO('Phân loại theo đại lượng mà mô đun cảm biến nhận biết.',['Ánh sáng','Nhiệt độ','Độ ẩm'],[['Quang điện trở',0],['Nhiệt điện trở',1],['Cảm biến độ ẩm đất',2],['Mạch bật đèn khi trời tối',0],['Mạch báo nóng',1],['Mạch tưới cây khi đất khô',2]],'Mỗi loại cảm biến nhận biết một đại lượng riêng.')]},
+ {name:'Thiết kế kĩ thuật',em:['📋','🧪','🧩','🔬','🛠️'],tip:'Thiết kế kĩ thuật đi từ xác định vấn đề đến chế tạo thử, kiểm tra và hoàn thiện.',ch:[
+  SC('Gợi ý: quá trình tạo ra sản phẩm kĩ thuật từ ý tưởng đến bản vẽ và mô hình. Sắp xếp các chữ cái.','THIẾT KẾ','Thiết kế kĩ thuật là quá trình tạo ra sản phẩm đáp ứng nhu cầu của con người.'),
+  OR('Sắp xếp các bước cơ bản trong thiết kế kĩ thuật.',['Xác định vấn đề cần giải quyết','Đề xuất các giải pháp','Lựa chọn giải pháp tối ưu','Chế tạo thử nghiệm sản phẩm','Kiểm tra, đánh giá và hoàn thiện'],'Quá trình có thể lặp lại cho đến khi sản phẩm đáp ứng yêu cầu.'),
+  TF('Đúng hay Sai về thiết kế kĩ thuật?',[['Thiết kế kĩ thuật là quá trình tạo ra sản phẩm đáp ứng nhu cầu của con người.',true],['Thiết kế kĩ thuật chỉ liên quan đến vẽ đẹp, không cần tính toán.',false],['Sau khi chế tạo thử cần kiểm tra, đánh giá để hoàn thiện sản phẩm.',true],['Sản phẩm đã thiết kế xong thì không bao giờ cần chỉnh sửa.',false]],'Thiết kế cần tính toán, thử nghiệm và cải tiến nhiều lần.')]}
+],bossq:[
+  Q('Hình chiếu bằng của vật thể được nhìn từ hướng nào?',['Từ trên xuống','Từ trước vào','Từ trái sang','Từ dưới lên'],0,'Hình chiếu bằng có hướng chiếu từ trên xuống.'),
+  Q('Dụng cụ nào dùng để làm nhẵn bề mặt chi tiết kim loại bằng tay?',['Giũa','Cưa','Đục','Thước lá'],0,'Giũa làm nhẵn và tạo hình bề mặt; cưa để cắt, đục để chặt, thước lá để đo.'),
+  Q('Biện pháp nào giúp an toàn khi sử dụng điện?',['Kiểm tra lớp cách điện của dây dẫn và thiết bị trước khi dùng','Chạm vào ổ điện bằng tay ướt','Dùng dây điện hở để tiết kiệm','Tự ý sửa điện khi chưa ngắt nguồn'],0,'Luôn kiểm tra cách điện, giữ tay khô và ngắt nguồn trước khi sửa chữa.'),
+  Q('Trong mạch điều khiển có mô đun cảm biến, bộ phận nào nhận tín hiệu từ môi trường?',['Cảm biến','Dây dẫn','Công tắc nguồn','Pin'],0,'Cảm biến biến đại lượng không điện (ánh sáng, nhiệt độ, độ ẩm) thành tín hiệu điện.')]},
+
+9:{name:'Công nghệ 9',boss:'Cổng Hướng nghiệp',zones:[
+ {name:'Nghề nghiệp kĩ thuật, công nghệ',em:['🔧','💻','🏗️','⚙️','🧰'],tip:'Nghề nghiệp trong lĩnh vực kĩ thuật, công nghệ đòi hỏi tri thức, kĩ năng và năng lực phù hợp.',ch:[
+  Q('Nghề nghiệp là gì?',['Tập hợp các công việc có đặc điểm chung, đòi hỏi người làm có tri thức, kĩ năng và năng lực phù hợp','Một công việc làm tạm thời trong thời gian ngắn','Sở thích cá nhân của mỗi người','Nơi làm việc của một người'],0,'Mỗi nghề có yêu cầu riêng về tri thức, kĩ năng và năng lực.'),
+  GR('Chọn tất cả ngành nghề thuộc lĩnh vực kĩ thuật, công nghệ.',['Kĩ sư điện','Kĩ thuật viên cơ khí','Kĩ sư xây dựng','Lập trình viên','Nhà báo','Diễn viên','Hướng dẫn viên du lịch','Biên tập viên'],[0,1,2,3],'Kĩ sư, kĩ thuật viên và lập trình viên làm việc trong lĩnh vực kĩ thuật, công nghệ.'),
+  TF('Đúng hay Sai về hướng đi sau trung học cơ sở?',[['Sau THCS, học sinh có thể học trung học phổ thông.',true],['Sau THCS, học sinh có thể học trung cấp ở cơ sở giáo dục nghề nghiệp.',true],['Chỉ có thể làm nghề kĩ thuật, công nghệ khi đã tốt nghiệp đại học.',false],['Học THPT kết hợp học nghề là một hướng đi sau THCS.',true]],'Có nhiều con đường để theo đuổi nghề kĩ thuật, công nghệ, không chỉ có đại học.')]},
+ {name:'Lựa chọn nghề nghiệp',em:['🎓','📋','🧭','📈','🤝'],tip:'Chọn nghề cần hiểu bản thân, tìm hiểu nghề và thị trường lao động rồi mới quyết định.',ch:[
+  OR('Sắp xếp quy trình lựa chọn nghề nghiệp.',['Tìm hiểu bản thân (sở thích, năng lực, tính cách)','Tìm hiểu thông tin về nghề nghiệp và thị trường lao động','Đối chiếu bản thân với yêu cầu của nghề','Đưa ra quyết định lựa chọn nghề','Lập kế hoạch học tập và rèn luyện'],'Hiểu mình và hiểu nghề trước khi quyết định giúp chọn nghề phù hợp.'),
+  Q('Vì sao nhu cầu xã hội là yếu tố ảnh hưởng tới quyết định chọn nghề?',['Nghề có nhu cầu lao động cao thì dễ có việc làm và có cơ hội phát triển','Vì nghề nào cũng giống nhau','Vì nhu cầu xã hội làm sở thích thay đổi ngay lập tức','Vì nhu cầu xã hội quyết định mức lương của mọi người'],0,'Nhu cầu xã hội cho biết nghề nào đang cần nhiều nhân lực.'),
+  SO('Phân loại các yếu tố ảnh hưởng đến lựa chọn nghề.',['Thuộc về bản thân','Bên ngoài'],[['Sở thích',0],['Năng lực',0],['Tính cách',0],['Nhu cầu xã hội',1],['Điều kiện kinh tế gia đình',1],['Cơ hội việc làm',1]],'Sở thích, năng lực, tính cách là yếu tố bản thân; gia đình và xã hội là yếu tố bên ngoài.')]},
+ {name:'Lắp đặt mạng điện trong nhà',em:['💡','🔌','⚡','🪛','🔦'],tip:'Công tắc và thiết bị bảo vệ mắc vào dây pha; aptomat tự ngắt khi quá tải hoặc ngắn mạch.',ch:[
+  MA('Ghép thiết bị điện với chức năng.',[['Công tắc','Đóng, ngắt điện để điều khiển đèn, quạt'],['Aptomat','Tự ngắt mạch khi quá tải hoặc ngắn mạch'],['Ổ cắm điện','Có lỗ cắm, cấp điện cho thiết bị khi cắm phích vào'],['Phích cắm','Có chấu cắm, nối thiết bị điện vào ổ cắm']],'Thiết bị đóng cắt và lấy điện là những phần quen thuộc của mạng điện trong nhà.'),
+  OR('Sắp xếp các bước thiết kế mạng điện trong nhà.',['Xác định nhu cầu sử dụng điện của các phòng','Vẽ sơ đồ nguyên lí mạch điện','Vẽ sơ đồ lắp đặt','Lập bảng thống kê vật liệu, thiết bị','Tính toán chi phí'],'Từ nhu cầu đến sơ đồ, vật liệu rồi mới tính chi phí.'),
+  Q('Khi lắp mạch đèn có công tắc, công tắc nên mắc vào dây nào?',['Dây pha (dây nóng)','Dây trung tính','Dây nối đất','Dây nào cũng như nhau'],0,'Công tắc mắc vào dây pha để khi tắt, đèn không còn mang điện, an toàn khi thay bóng.')]},
+ {name:'Chế biến thực phẩm',em:['🍲','🥗','🍳','🥦','🔪'],tip:'Ăn chín, uống sôi; tách riêng thực phẩm sống và thực phẩm chín.',ch:[
+  GR('Chọn tất cả biện pháp đảm bảo an toàn vệ sinh thực phẩm khi chế biến.',['Rửa tay sạch trước khi chế biến','Dùng thớt riêng cho thực phẩm sống và chín','Để thức ăn chín ngoài trời nhiều giờ','Rửa sạch rau, quả','Dùng chung dao thớt cho thịt sống và rau ăn liền','Nấu chín thực phẩm','Bảo quản thức ăn thừa đúng cách','Dùng thực phẩm quá hạn'],[0,1,3,5,6],'Vệ sinh sạch sẽ, tách riêng sống – chín, nấu chín và bảo quản đúng cách giúp tránh ngộ độc.'),
+  Q('Chất nào trong thực phẩm giúp tiêu hoá tốt và phòng táo bón?',['Chất xơ','Chất béo','Chất đạm','Muối khoáng'],0,'Chất xơ có nhiều trong rau, quả, ngũ cốc nguyên hạt.'),
+  TF('Đúng hay Sai về cách chế biến thực phẩm?',[['Gỏi, nộm trộn dầu giấm thuộc chế biến không sử dụng nhiệt.',true],['Hấp là phương pháp chế biến có sử dụng nhiệt.',true],['Luộc thực phẩm là chế biến không sử dụng nhiệt.',false],['Rau quả tươi chế biến không dùng nhiệt giữ được nhiều vitamin hơn.',true]],'Luộc, hấp, rán, nướng cần dùng nhiệt; trộn dầu giấm, muối chua thì không.')]},
+ {name:'Trồng cây ăn quả',em:['🍊','🥭','🌳','🍌','🌿'],tip:'Nhân giống vô tính (chiết, ghép, giâm cành) giúp cây con giữ đặc tính của cây mẹ.',ch:[
+  Q('Phương pháp nào sau đây là nhân giống vô tính cây ăn quả?',['Chiết cành, ghép cành, giâm cành','Gieo hạt','Ươm hạt lấy từ quả','Để cây mọc tự nhiên từ hạt rơi'],0,'Nhân giống vô tính dùng một bộ phận của cây mẹ nên cây con giữ được đặc tính tốt.'),
+  SO('Phân loại cây ăn quả.',['Cây ăn quả có múi','Cây ăn quả khác'],[['Cam',0],['Bưởi',0],['Chanh',0],['Nhãn',1],['Xoài',1],['Sầu riêng',1]],'Cam, bưởi, chanh, quýt thuộc nhóm cây ăn quả có múi.'),
+  OR('Sắp xếp các bước trồng cây ăn quả bằng cây con.',['Đào hố, bón lót phân hữu cơ','Đặt cây con vào giữa hố','Lấp đất, nén nhẹ quanh gốc','Làm cọc chống, tưới nước giữ ẩm'],'Sau khi trồng cần tưới nước và chống đỡ để cây bén rễ.')]}
+],bossq:[
+  Q('Khi chọn nghề, cần tìm hiểu những thông tin nào?',['Yêu cầu của nghề, cơ sở đào tạo và triển vọng việc làm','Chỉ cần biết tên nghề','Chỉ cần biết mức lương cao nhất','Không cần tìm hiểu gì'],0,'Cần hiểu yêu cầu nghề, nơi đào tạo và nhu cầu thị trường lao động.'),
+  Q('Thiết bị nào tự ngắt điện khi mạch bị quá tải hoặc ngắn mạch?',['Aptomat','Công tắc','Ổ cắm','Phích cắm'],0,'Aptomat vừa đóng cắt vừa bảo vệ mạch điện.'),
+  Q('Để tránh ngộ độc thực phẩm, cần làm gì?',['Ăn chín, uống sôi và chọn thực phẩm tươi, rõ nguồn gốc','Ăn thức ăn đã có mùi lạ','Để thức ăn chín ngoài trời nhiều giờ','Dùng chung thớt cho mọi loại thực phẩm'],0,'Vệ sinh và nấu chín là nguyên tắc cơ bản của an toàn thực phẩm.'),
+  Q('Nhân giống bằng chiết cành có ưu điểm nào?',['Cây con giữ đặc tính của cây mẹ và sớm cho quả','Cây con luôn khác hoàn toàn cây mẹ','Cho năng suất rất thấp','Phải gieo hạt trước'],0,'Chiết cành là nhân giống vô tính nên cây con giống cây mẹ.')]}
+};
+
+/* ====================== NGÂN HÀNG MỞ RỘNG & CÂU HỎI SINH NGẪU NHIÊN ====================== */
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function fmtN(n){return String(Math.round(n*100)/100).replace('.',',')}
+function numQ(q,ans,unit,e){
+  var c=[ans*2,ans/2,ans*1.5,ans*0.8,ans+10,ans-10,ans*10,ans/10,ans+1,ans*1.25].map(function(x){return Math.round(x*100)/100}).filter(function(x){return x>0&&x!==ans});
+  var u=[];c.forEach(function(x){if(u.indexOf(x)<0)u.push(x)});
+  var opts=[ans].concat(shuffle(u).slice(0,3)).map(function(x){return (fmtN(x)+' '+unit).trim()});
+  return Q(q,opts,0,e);
+}
+function genFish(){var N=pick([1000,1500,2000,2500]),p=pick([70,80,90]),w=pick([1,1.5,2]),al=N*p/100,A=al*w;
+  return numQ('Một hộ nuôi cá thả '+N+' con giống, tỉ lệ sống '+p+'%. Cuối vụ mỗi con nặng trung bình '+fmtN(w)+' kg. Tổng sản lượng cá thu được là bao nhiêu?',A,'kg','Số cá sống = '+N+' × '+p+'% = '+al+' con. Sản lượng = '+al+' × '+fmtN(w)+' = '+fmtN(A)+' kg.')}
+function genCrop(){var S1=pick([2,3,4,5]),y=pick([5,6,7]),A=S1*y;
+  return numQ('Một thửa ruộng rộng '+S1+' ha, năng suất lúa đạt '+y+' tấn/ha. Sản lượng lúa thu được là bao nhiêu?',A,'tấn','Sản lượng = diện tích × năng suất = '+S1+' × '+y+' = '+A+' tấn.')}
+function genGear(){var z1=pick([20,30,40]),z2=pick([10,20,40,60]);while(z1===z2)z2=pick([10,20,40,60]);var n1=pick([60,120,240]),n2=n1*z1/z2;
+  return numQ('Bánh răng dẫn có '+z1+' răng quay '+n1+' vòng/phút, ăn khớp với bánh răng bị dẫn có '+z2+' răng. Bánh răng bị dẫn quay bao nhiêu vòng/phút?',n2,'vòng/phút','n2 = n1 × Z1 / Z2 = '+n1+' × '+z1+' / '+z2+' = '+fmtN(n2)+' vòng/phút.')}
+function genRatio(){var z1=pick([20,30,40]),z2=pick([10,20,40,60]);while(z1===z2)z2=pick([10,20,40,60]);var i=z1/z2;
+  return numQ('Bánh dẫn có '+z1+' răng, bánh bị dẫn có '+z2+' răng. Tỉ số truyền i bằng bao nhiêu?',i,'','i = Z1 / Z2 = '+z1+' / '+z2+' = '+fmtN(i)+(i<1?', bánh bị dẫn quay nhanh hơn' + ' bánh dẫn nếu i > 1; ở đây i < 1 nên quay chậm hơn.':(i>1?'. Vì i > 1 nên bánh bị dẫn quay nhanh hơn.':'.')))}
+function genScale(){var k=pick([2,5,10]),L=pick([100,200,500,1000]),r=Math.random()<.5;
+  if(r)return numQ('Một chi tiết dài '+L+' mm được vẽ trên bản vẽ với tỉ lệ 1:'+k+'. Chiều dài của chi tiết trên bản vẽ là bao nhiêu?',L/k,'mm','Tỉ lệ 1:'+k+' là tỉ lệ thu nhỏ: '+L+' / '+k+' = '+fmtN(L/k)+' mm.');
+  var l2=pick([5,10,20]);
+  return numQ('Một chi tiết nhỏ dài '+l2+' mm được vẽ với tỉ lệ 2:1 (phóng to). Chiều dài trên bản vẽ là bao nhiêu?',l2*2,'mm','Tỉ lệ 2:1 là tỉ lệ phóng to: '+l2+' × 2 = '+(l2*2)+' mm.')}
+function genPower(){var n=pick([2,3,4,5]),P=pick([9,10,15,20]),hh=pick([4,5,6]),A=n*P*hh*30/1000;
+  return numQ('Một gia đình dùng '+n+' bóng đèn LED loại '+P+' W. Mỗi bóng bật '+hh+' giờ mỗi ngày. Điện năng các bóng tiêu thụ trong 30 ngày là bao nhiêu?',A,'kWh','Điện năng = công suất × thời gian = '+n+' × '+P+' W × '+hh+' giờ × 30 ngày = '+(n*P*hh*30)+' Wh = '+fmtN(A)+' kWh.')}
+
+var EXTRA={
+6:{z:[
+ [Q('Kiểu nhà ở nhiều tầng, có nhiều hộ gia đình cùng sinh sống, phổ biến ở đô thị là gì?',['Nhà chung cư','Nhà sàn','Nhà nổi','Nhà ba gian'],0,'Nhà chung cư có nhiều tầng, nhiều hộ gia đình, thường xây ở đô thị.'),
+  GR('Chọn tất cả vật liệu thường dùng để xây dựng nhà ở.',['Gạch','Xi măng','Cát','Thép xây dựng','Giấy báo','Len','Bột mì','Bông'],[0,1,2,3],'Gạch, xi măng, cát, thép là các vật liệu xây dựng phổ biến.'),
+  OR('Sắp xếp các giai đoạn xây dựng nhà ở theo thứ tự.',['Chuẩn bị: thiết kế, vật liệu, nhân công','Thi công phần thô: móng, khung, tường, mái','Hoàn thiện: trát, sơn, lát nền, lắp thiết bị'],'Phải xây phần thô xong rồi mới hoàn thiện.'),
+  FI('Nhà ở có vai trò ___ con người trước tác động của thiên nhiên và là nơi ___ của gia đình.',['bảo vệ','sinh hoạt'],['bảo vệ','sinh hoạt','phá hủy','buôn bán'],'Nhà ở là nơi trú ngụ, bảo vệ và sinh hoạt của cả gia đình.')],
+ [GR('Chọn tất cả thực phẩm giàu chất đạm.',['Thịt gà','Cá','Trứng','Đậu phụ','Gạo','Khoai lang','Dầu ăn','Cam'],[0,1,2,3],'Thịt, cá, trứng, đậu phụ giàu chất đạm; gạo, khoai là nguồn chất bột đường.'),
+  Q('Phơi khô cá, mực thuộc phương pháp bảo quản thực phẩm nào?',['Làm khô','Làm lạnh','Đóng hộp','Ngâm đường'],0,'Làm khô là loại bớt nước để hạn chế vi khuẩn phát triển.'),
+  SO('Phân loại món ăn theo phương pháp chế biến.',['Có dùng nhiệt','Không dùng nhiệt'],[['Luộc rau',0],['Rán cá',0],['Nướng thịt',0],['Kho cá',0],['Nộm rau củ',1],['Muối chua',1]],'Luộc, rán, nướng, kho cần dùng nhiệt; nộm và muối chua không dùng nhiệt.'),
+  TF('Đúng hay Sai về bữa ăn hợp lí?',[['Bữa ăn hợp lí cần đủ các nhóm chất dinh dưỡng.',true],['Chỉ ăn thịt, không cần rau quả vẫn là hợp lí.',false],['Nên ăn đa dạng thực phẩm.',true],['Uống đủ nước mỗi ngày là cần thiết.',true]],'Bữa ăn hợp lí cần đủ chất, đa dạng thực phẩm và đủ nước.')],
+ [MA('Ghép loại vải với đặc điểm.',[['Vải sợi bông','Thấm hút mồ hôi tốt, thoáng mát'],['Vải len','Giữ ấm, thường mặc khi trời lạnh'],['Vải tơ tằm','Mềm, mịn, nhẹ, óng ánh'],['Vải sợi polyester','Bền, ít nhàu, thấm hút mồ hôi kém hơn']],'Mỗi loại vải có đặc điểm riêng nên chọn đúng loại cho từng hoàn cảnh.'),
+  SO('Phân loại nguồn gốc sợi vải.',['Sợi thiên nhiên','Sợi hoá học'],[['Bông',0],['Tơ tằm',0],['Len',0],['Polyester',1],['Nylon',1],['Visco',1]],'Bông, tơ tằm, len có nguồn gốc thiên nhiên; polyester, nylon, visco là sợi hoá học.'),
+  Q('Quần áo trắng và quần áo màu đậm nên giặt như thế nào?',['Giặt riêng để tránh phai màu làm hỏng quần áo trắng','Giặt chung cho nhanh','Ngâm chung nhiều giờ','Không cần giặt'],0,'Quần áo cần được phân loại trước khi giặt.'),
+  FI('Khi chọn trang phục cần phù hợp với ___ , lứa tuổi và ___ sử dụng.',['vóc dáng','hoàn cảnh'],['vóc dáng','hoàn cảnh','giá tiền','màu sắc yêu thích'],'Chọn trang phục phù hợp vóc dáng, lứa tuổi và hoàn cảnh sử dụng.')],
+ [MA('Ghép đồ dùng điện với tác dụng.',[['Bàn là','Toả nhiệt để làm phẳng quần áo'],['Quạt điện','Quay cánh quạt tạo gió'],['Đèn LED','Phát ra ánh sáng'],['Nồi cơm điện','Nấu chín cơm bằng nhiệt']],'Mỗi đồ dùng điện biến điện năng thành một dạng năng lượng khác nhau.'),
+  Q('Vì sao không nên cắm nhiều thiết bị công suất lớn vào cùng một ổ cắm?',['Dễ quá tải, nóng và chập cháy','Làm thiết bị chạy chậm đi','Làm hỏng dây tiếp đất ngay','Không có tác hại gì'],0,'Quá tải ổ cắm làm dây nóng lên, có thể gây cháy.'),
+  OR('Sắp xếp các bước sử dụng quạt điện an toàn.',['Kiểm tra dây điện, phích cắm và cánh quạt','Cắm phích vào ổ điện','Bật quạt và chọn tốc độ phù hợp','Tắt quạt, rút phích cắm khi không dùng'],'Luôn kiểm tra trước khi dùng và rút phích khi không dùng.'),
+  SC('Gợi ý: thiết bị đóng, ngắt dòng điện để điều khiển đèn, quạt. Sắp xếp các chữ cái.','CÔNG TẮC','Công tắc là thiết bị đóng cắt trong mạch điện.')]
+ ],boss:[
+  Q('Nhóm thực phẩm nào là nguồn cung cấp chất bột đường chính?',['Gạo, ngô, khoai','Thịt, cá, trứng','Dầu, mỡ','Rau xanh'],0,'Gạo, ngô, khoai, sắn cung cấp chất bột đường.'),
+  Q('Kiểu nhà nào làm nổi trên mặt nước, đặc trưng của vùng sông nước?',['Nhà nổi','Nhà sàn','Nhà chung cư','Nhà phố'],0,'Nhà nổi phù hợp với vùng sông nước.'),
+  Q('Vải nào thường dùng may đồ mặc khi trời nóng vì thấm hút mồ hôi tốt?',['Vải sợi bông','Vải nylon','Vải len','Vải bạt'],0,'Vải sợi bông thoáng mát, thấm hút mồ hôi tốt.'),
+  Q('Khi rút phích cắm ra khỏi ổ điện, cần làm thế nào cho đúng?',['Cầm vào phần thân phích rồi rút','Kéo mạnh dây điện','Giật dây bằng cả hai tay','Dùng kéo cắt dây'],0,'Không kéo dây điện vì dễ làm hỏng dây và gây nguy hiểm.'),
+  Q('Trong ngôi nhà thông minh, cảm biến chuyển động có thể dùng để làm gì?',['Tự động bật đèn khi có người','Giặt quần áo','Nấu cơm','Lau nhà'],0,'Cảm biến chuyển động giúp điều khiển đèn tự động, tiết kiệm năng lượng.'),
+  Q('Phương pháp nào sau đây là chế biến thực phẩm không dùng nhiệt?',['Trộn dầu giấm','Rán','Nướng','Kho'],0,'Trộn dầu giấm, muối chua không cần dùng nhiệt.')]},
+7:{z:[
+ [Q('Đất trồng gồm những thành phần nào?',['Chất rắn, chất lỏng (nước) và chất khí (không khí)','Chỉ có chất rắn','Chỉ có nước và không khí','Chỉ có chất hữu cơ'],0,'Đất trồng gồm ba thành phần: chất rắn, chất lỏng và chất khí.'),
+  OR('Sắp xếp quy trình trồng trọt theo thứ tự.',['Làm đất','Bón phân lót','Gieo trồng','Chăm sóc','Thu hoạch'],'Quy trình: làm đất, bón lót, gieo trồng, chăm sóc, thu hoạch.'),
+  MA('Ghép phương pháp nhân giống với đặc điểm.',[['Giâm cành','Cắt cành cắm xuống đất ẩm để ra rễ'],['Chiết cành','Cành ra rễ khi còn dính trên cây mẹ'],['Ghép cành','Gắn cành hoặc mắt của cây này lên gốc cây khác'],['Gieo hạt','Nhân giống hữu tính bằng hạt']],'Giâm, chiết, ghép là nhân giống vô tính; gieo hạt là nhân giống hữu tính.'),
+  {gen:genCrop}],
+ [Q('Rừng có vai trò nào sau đây?',['Điều hoà khí hậu, bảo vệ đất và nguồn nước','Làm tăng xói mòn đất','Làm cạn kiệt nguồn nước','Gây ô nhiễm không khí'],0,'Rừng điều hoà khí hậu, giữ đất, giữ nước và bảo vệ môi trường.'),
+  GR('Chọn tất cả hoạt động góp phần bảo vệ rừng.',['Trồng cây gây rừng','Không đốt nương làm rẫy bừa bãi','Phòng chống cháy rừng','Tuyên truyền bảo vệ rừng','Săn bắt động vật rừng trái phép','Chặt phá rừng lấy gỗ trái phép','Vứt rác vào rừng','Dùng lửa bất cẩn trong rừng'],[0,1,2,3],'Trồng rừng, phòng cháy, tuyên truyền là các việc làm bảo vệ rừng.'),
+  FI('Rừng được chia thành rừng ___ , rừng phòng hộ và rừng ___ .',['sản xuất','đặc dụng'],['sản xuất','đặc dụng','đô thị','nhân tạo'],'Ba loại rừng: sản xuất, phòng hộ, đặc dụng.'),
+  SC('Gợi ý: loại rừng dùng để chắn gió, chống xói mòn. Sắp xếp các chữ cái.','PHÒNG HỘ','Rừng phòng hộ chắn gió, chống xói mòn, bảo vệ nguồn nước.')],
+ [MA('Ghép vật nuôi với vai trò chính.',[['Bò sữa','Cung cấp sữa'],['Gà thịt','Cung cấp thịt'],['Trâu cày kéo','Cung cấp sức kéo'],['Chó, mèo cảnh','Làm cảnh, làm bạn']],'Vật nuôi có nhiều vai trò khác nhau trong đời sống.'),
+  Q('Bệnh truyền nhiễm ở vật nuôi do tác nhân nào gây ra?',['Vi sinh vật gây bệnh như virus, vi khuẩn','Cho ăn quá nhiều','Chuồng nuôi quá rộng','Thời tiết dễ chịu'],0,'Bệnh truyền nhiễm do vi sinh vật gây ra và có thể lây lan.'),
+  FI('Vật nuôi non cần giữ ___ và cho bú sữa ___ sớm để tăng sức đề kháng.',['ấm','đầu'],['ấm','đầu','mát','bột'],'Sữa đầu chứa nhiều kháng thể giúp con non phòng bệnh.'),
+  GR('Chọn tất cả biện pháp phòng bệnh cho vật nuôi.',['Tiêm vắc xin đúng lịch','Vệ sinh chuồng trại','Cho ăn đủ chất','Cách li vật nuôi ốm','Để chuồng ẩm ướt','Nuôi chung vật ốm và vật khoẻ','Cho ăn thức ăn ôi thiu','Xả nước thải thẳng ra ao'],[0,1,2,3],'Tiêm phòng, vệ sinh, nuôi dưỡng tốt và cách li vật ốm giúp phòng bệnh.')],
+ [Q('Nuôi trồng thủy sản có vai trò nào?',['Cung cấp thực phẩm, nguyên liệu, tạo việc làm và xuất khẩu','Chỉ để làm cảnh','Làm giảm nguồn thực phẩm','Không có vai trò kinh tế'],0,'Thủy sản cung cấp thực phẩm, nguyên liệu và tạo thu nhập.'),
+  SO('Phân loại thủy sản.',['Cá','Tôm, cua'],[['Cá rô phi',0],['Cá chép',0],['Cá trắm',0],['Tôm sú',1],['Tôm thẻ',1],['Cua đồng',1]],'Cá rô phi, chép, trắm là các loài cá; tôm, cua thuộc nhóm giáp xác.'),
+  FI('Trước khi thả cá giống cần ___ ao: vét bùn, bón ___ , lấy nước.',['cải tạo','vôi'],['cải tạo','vôi','xây','sơn'],'Cải tạo ao giúp môi trường nước tốt cho cá.'),
+  TF('Đúng hay Sai về nuôi thủy sản?',[['Cần giữ nước ao sạch để cá sinh trưởng tốt.',true],['Thả cá giống với mật độ càng dày càng tốt.',false],['Thức ăn thừa nhiều làm ô nhiễm nước ao.',true],['Nuôi trồng thủy sản góp phần xuất khẩu.',true]],'Mật độ nuôi hợp lí và giữ sạch nước ao là rất quan trọng.'),
+  {gen:genFish}]
+ ],boss:[
+  Q('Biện pháp nào giúp cải tạo đất chua?',['Bón vôi','Bón thêm axit','Bỏ hoang đất','Đổ rác thải'],0,'Bón vôi giúp giảm độ chua của đất.'),
+  Q('Phương pháp nhân giống nào sử dụng hạt?',['Nhân giống hữu tính','Giâm cành','Chiết cành','Ghép cành'],0,'Gieo hạt là nhân giống hữu tính.'),
+  Q('Gia cầm là nhóm vật nuôi nào?',['Gà, vịt, ngan','Trâu, bò, lợn','Cá, tôm','Chó, mèo'],0,'Gà, vịt, ngan là gia cầm.'),
+  Q('Loại rừng nào dùng để chắn gió, chống xói mòn?',['Rừng phòng hộ','Rừng sản xuất','Rừng đặc dụng','Vườn cây ăn quả'],0,'Rừng phòng hộ bảo vệ đất, nguồn nước và chắn gió.'),
+  Q('Thức ăn thừa trong ao nuôi nhiều sẽ gây hậu quả gì?',['Làm ô nhiễm nước ao','Làm cá lớn nhanh gấp đôi','Làm nước ao sạch hơn','Không ảnh hưởng gì'],0,'Thức ăn thừa phân huỷ làm bẩn nước ao.'),
+  Q('Vắc xin dùng để làm gì cho vật nuôi?',['Giúp cơ thể tạo miễn dịch phòng bệnh','Làm vật nuôi tăng cân nhanh','Thay thế thức ăn','Làm sạch chuồng'],0,'Vắc xin giúp vật nuôi có khả năng chống lại bệnh.')]},
+8:{z:[
+ [Q('Nét liền đậm trên bản vẽ kĩ thuật dùng để vẽ gì?',['Đường bao thấy, cạnh thấy','Đường tâm','Đường kích thước','Đường bao khuất'],0,'Nét liền đậm vẽ đường bao thấy và cạnh thấy.'),
+  MA('Ghép loại nét vẽ với công dụng.',[['Nét liền đậm','Đường bao thấy, cạnh thấy'],['Nét đứt mảnh','Đường bao khuất, cạnh khuất'],['Nét chấm gạch mảnh','Đường tâm, trục đối xứng'],['Nét liền mảnh','Đường kích thước, đường gióng']],'Mỗi loại nét có một công dụng riêng.'),
+  SO('Phân loại khối hình học.',['Khối đa diện','Khối tròn xoay'],[['Hình hộp chữ nhật',0],['Hình lăng trụ đều',0],['Hình chóp đều',0],['Hình trụ',1],['Hình nón',1],['Hình cầu',1]],'Hình trụ, nón, cầu là khối tròn xoay.'),
+  {gen:genScale}],
+ [Q('Dụng cụ nào dùng để cắt kim loại bằng tay?',['Cưa','Giũa','Búa','Êke'],0,'Cưa dùng để cắt; giũa dùng để làm nhẵn bề mặt.'),
+  GR('Chọn tất cả dụng cụ dùng trong gia công cơ khí bằng tay.',['Cưa tay','Giũa','Đục','Búa','Quạt điện','Bóng đèn','Ổ cắm điện','Pin'],[0,1,2,3],'Cưa, giũa, đục, búa là dụng cụ gia công cơ khí cầm tay.'),
+  FI('Trong truyền động bánh răng, bánh có số răng ít hơn sẽ quay ___ hơn bánh có số răng nhiều hơn.',['nhanh'],['nhanh','chậm','đều','ngược'],'Tốc độ quay tỉ lệ nghịch với số răng.'),
+  {gen:genGear},{gen:genRatio}],
+ [Q('Điện áp của mạng điện sinh hoạt trong gia đình ở Việt Nam là bao nhiêu?',['220 V','12 V','5 V','1 000 V'],0,'Mạng điện sinh hoạt ở Việt Nam có điện áp 220 V.'),
+  GR('Chọn tất cả việc làm an toàn khi dùng điện.',['Dùng ổ cắm có nắp che','Rút phích bằng cách cầm vào phích','Kiểm tra dây điện trước khi dùng','Dùng tay khô khi đóng cắt điện','Chạm tay ướt vào công tắc','Dùng dây điện bị hở vỏ','Leo cột điện thả diều','Tự sửa điện khi chưa ngắt nguồn'],[0,1,2,3],'Giữ tay khô, kiểm tra cách điện, không tự ý sửa khi còn điện.'),
+  FI('Khi có người bị điện giật, việc đầu tiên là ___ nguồn điện, rồi mới ___ nạn nhân.',['ngắt','cứu'],['ngắt','cứu','bật','chạm'],'Phải ngắt nguồn điện trước để bảo đảm an toàn cho bản thân.')],
+ [Q('Thiết bị nào bảo vệ mạch điện, tự ngắt khi quá tải hoặc ngắn mạch?',['Cầu chì','Công tắc','Ổ cắm','Phích cắm'],0,'Cầu chì và aptomat là thiết bị bảo vệ mạch điện.'),
+  SC('Gợi ý: thiết bị bảo vệ mạch điện, dây chì nóng chảy khi quá dòng. Sắp xếp các chữ cái.','CẦU CHÌ','Cầu chì ngắt mạch khi dòng điện quá lớn.'),
+  SO('Phân loại thành phần của mạch điện.',['Nguồn điện','Tải tiêu thụ','Thiết bị bảo vệ'],[['Pin',0],['Ắc quy',0],['Bóng đèn',1],['Quạt điện',1],['Cầu chì',2],['Aptomat',2]],'Pin, ắc quy là nguồn; đèn, quạt là tải; cầu chì, aptomat bảo vệ mạch.')],
+ [Q('Bước đầu tiên của quá trình thiết kế kĩ thuật là gì?',['Xác định vấn đề cần giải quyết','Chế tạo sản phẩm','Bán sản phẩm','Trang trí bản vẽ'],0,'Phải xác định rõ nhu cầu, vấn đề trước khi tìm giải pháp.'),
+  MA('Ghép giai đoạn thiết kế với nội dung.',[['Xác định vấn đề','Nêu nhu cầu, yêu cầu của sản phẩm'],['Đề xuất giải pháp','Nêu các ý tưởng, phương án khả thi'],['Chế tạo thử','Làm mẫu theo giải pháp đã chọn'],['Đánh giá, hoàn thiện','Kiểm tra, sửa đổi cho phù hợp']],'Các giai đoạn nối tiếp và có thể lặp lại.'),
+  FI('Sau khi chế tạo thử, cần ___ sản phẩm và ___ nếu chưa đạt yêu cầu.',['kiểm tra','hoàn thiện'],['kiểm tra','hoàn thiện','bán','vứt bỏ'],'Kiểm tra, đánh giá rồi hoàn thiện là bước cuối cùng.')]
+ ],boss:[
+  Q('Khổ giấy A3 có kích thước nào?',['420 × 297 mm','297 × 210 mm','594 × 420 mm','210 × 148 mm'],0,'A3 là 420 × 297 mm; A4 là 297 × 210 mm.'),
+  Q('Vật liệu nào là kim loại màu?',['Nhôm','Thép','Gang','Cao su'],0,'Nhôm, đồng, kẽm là kim loại màu; thép, gang là kim loại đen.'),
+  Q('Cơ cấu nào biến chuyển động quay thành chuyển động tịnh tiến qua lại?',['Tay quay – con trượt','Bộ truyền động đai','Cặp bánh răng ăn khớp','Bộ truyền động xích'],0,'Cơ cấu tay quay – con trượt biến quay thành tịnh tiến.'),
+  Q('Thiết bị nào dùng để đóng, ngắt dòng điện trong mạch?',['Công tắc','Cầu chì','Pin','Dây dẫn'],0,'Công tắc là thiết bị đóng cắt.'),
+  Q('Bước nào là bước cuối cùng của quá trình thiết kế kĩ thuật?',['Kiểm tra, đánh giá và hoàn thiện sản phẩm','Xác định vấn đề','Đề xuất giải pháp','Lựa chọn giải pháp'],0,'Sản phẩm được kiểm tra, đánh giá rồi hoàn thiện.'),
+  Q('Hình chiếu cạnh được đặt ở vị trí nào so với hình chiếu đứng?',['Bên phải hình chiếu đứng','Bên dưới hình chiếu đứng','Bên trên hình chiếu đứng','Bên trái hình chiếu đứng'],0,'Hình chiếu bằng ở dưới, hình chiếu cạnh ở bên phải hình chiếu đứng.')]},
+9:{z:[
+ [SO('Phân loại nghề theo lĩnh vực.',['Kĩ thuật, công nghệ','Lĩnh vực khác'],[['Kĩ sư điện',0],['Thợ hàn',0],['Lập trình viên',0],['Nhà báo',1],['Diễn viên',1],['Hướng dẫn viên du lịch',1]],'Kĩ sư, thợ hàn, lập trình viên thuộc lĩnh vực kĩ thuật, công nghệ.'),
+  Q('Sau THCS, học sinh có thể học tiếp ở đâu?',['Trường THPT hoặc cơ sở giáo dục nghề nghiệp','Chỉ ở trường THPT','Chỉ ở trường đại học','Không được học tiếp'],0,'Có nhiều hướng đi: THPT, trung cấp, học nghề.'),
+  MA('Ghép tên nghề với công việc đặc trưng.',[['Kĩ sư xây dựng','Thiết kế, giám sát công trình xây dựng'],['Thợ điện','Lắp đặt, sửa chữa hệ thống điện'],['Lập trình viên','Viết phần mềm, ứng dụng'],['Thợ cơ khí','Gia công, lắp ráp, sửa chữa máy móc']],'Mỗi nghề có công việc và yêu cầu riêng.')],
+ [GR('Chọn tất cả yếu tố cần cân nhắc khi chọn nghề.',['Sở thích','Năng lực bản thân','Nhu cầu của thị trường lao động','Điều kiện học tập','Chỉ chọn theo bạn bè','Chỉ chọn nghề lương cao nhất','Chọn ngẫu nhiên','Không cần tìm hiểu gì'],[0,1,2,3],'Cần cân nhắc bản thân, nhu cầu xã hội và điều kiện học tập.'),
+  FI('Khi chọn nghề cần hiểu rõ ___ , tìm hiểu ___ và thị trường lao động.',['bản thân','nghề nghiệp'],['bản thân','nghề nghiệp','bạn bè','quảng cáo'],'Hiểu mình và hiểu nghề giúp chọn nghề phù hợp.'),
+  TF('Đúng hay Sai về việc chọn nghề?',[['Nên tham khảo ý kiến thầy cô, cha mẹ khi chọn nghề.',true],['Chọn nghề chỉ cần dựa vào sở thích nhất thời.',false],['Thị trường lao động thay đổi theo thời gian.',true],['Chọn đúng nghề giúp làm việc hiệu quả và hứng thú hơn.',true]],'Chọn nghề cần cân nhắc nhiều yếu tố, không chỉ sở thích nhất thời.')],
+ [Q('Dụng cụ nào dùng để kiểm tra dây dẫn có điện hay không?',['Bút thử điện','Tua vít thường','Kìm cắt','Thước cuộn'],0,'Bút thử điện dùng để kiểm tra có điện hay không.'),
+  MA('Ghép dụng cụ với công dụng.',[['Bút thử điện','Kiểm tra có điện hay không'],['Kìm tuốt dây','Cắt, tuốt vỏ cách điện của dây'],['Tua vít','Vặn vít lắp thiết bị'],['Đồng hồ vạn năng','Đo điện áp, dòng điện, điện trở']],'Mỗi dụng cụ có công dụng riêng.'),
+  OR('Sắp xếp các bước lắp đặt mạng điện trong nhà.',['Chuẩn bị dụng cụ, vật liệu theo sơ đồ','Vạch dấu vị trí lắp thiết bị','Lắp thiết bị, nối dây dẫn','Kiểm tra mạch điện rồi mới đóng điện'],'Luôn kiểm tra kĩ trước khi cấp điện.'),
+  {gen:genPower}],
+ [SO('Phân loại thực phẩm theo nhóm chất dinh dưỡng chính.',['Chất đạm','Chất bột đường','Vitamin, khoáng'],[['Thịt',0],['Cá',0],['Gạo',1],['Khoai',1],['Rau xanh',2],['Cam',2]],'Thịt, cá giàu chất đạm; gạo, khoai giàu bột đường; rau, quả giàu vitamin và khoáng.'),
+  Q('Nguyên tắc nào giúp tránh ngộ độc thực phẩm?',['Ăn chín, uống sôi','Ăn thức ăn đã ôi thiu','Rửa rau bằng nước bẩn','Dùng chung dao thớt sống và chín'],0,'Ăn chín, uống sôi và giữ vệ sinh là nguyên tắc cơ bản.'),
+  FI('Cần dùng thớt ___ cho thực phẩm sống và thực phẩm ___ .',['riêng','chín'],['riêng','chín','chung','ướp'],'Tách riêng sống và chín để tránh lây nhiễm chéo.')],
+ [MA('Ghép phương pháp nhân giống với đặc điểm.',[['Chiết cành','Cành ra rễ khi còn trên cây mẹ'],['Giâm cành','Cắm đoạn cành xuống đất ẩm để ra rễ'],['Ghép cành','Gắn cành hoặc mắt lên gốc ghép'],['Gieo hạt','Nhân giống hữu tính bằng hạt']],'Giâm, chiết, ghép là nhân giống vô tính.'),
+  Q('Vì sao nên bón phân lót khi trồng cây ăn quả?',['Cung cấp dinh dưỡng ban đầu cho cây con','Làm cây chết nhanh','Làm đất cứng hơn','Không có tác dụng'],0,'Phân lót cung cấp dinh dưỡng giúp cây con bén rễ, phát triển.'),
+  GR('Chọn tất cả việc chăm sóc cây ăn quả.',['Tưới nước','Bón phân','Tỉa cành, tạo tán','Phòng trừ sâu bệnh','Chặt gốc','Để cỏ dại mọc um tùm','Bỏ mặc cây','Đổ rác độc hại'],[0,1,2,3],'Tưới, bón phân, tỉa cành, phòng sâu bệnh là các việc chăm sóc cần thiết.')]
+ ],boss:[
+  Q('Nhân giống bằng cách gieo hạt gọi là phương pháp nào?',['Hữu tính','Vô tính','Chiết cành','Giâm cành'],0,'Gieo hạt là nhân giống hữu tính.'),
+  Q('Thiết bị nào dùng để kiểm tra dây dẫn có điện hay không?',['Bút thử điện','Kìm','Búa','Thước'],0,'Bút thử điện giúp phát hiện dây có điện.'),
+  Q('Bước đầu tiên khi chọn nghề là gì?',['Tìm hiểu bản thân và nghề nghiệp','Đăng kí ngay vào trường bất kì','Chọn theo bạn','Không làm gì'],0,'Hiểu bản thân và hiểu nghề là bước nền tảng.'),
+  Q('Sau THCS, ngoài học THPT còn có hướng đi nào?',['Học trung cấp tại cơ sở giáo dục nghề nghiệp','Không có hướng nào khác','Chỉ đi làm ngay','Chỉ học đại học'],0,'Học nghề là một hướng đi sau THCS.'),
+  Q('Thức ăn chín để ngoài nhiều giờ có nguy cơ gì?',['Dễ nhiễm khuẩn, gây ngộ độc','Ngon hơn','Bổ hơn','Không có nguy cơ gì'],0,'Thức ăn để lâu dễ bị vi khuẩn phát triển.'),
+  Q('Mục đích của sơ đồ lắp đặt mạng điện là gì?',['Chỉ rõ vị trí lắp và cách nối dây các thiết bị','Làm đẹp ngôi nhà','Tính tiền điện','Giảm giá thiết bị'],0,'Sơ đồ lắp đặt giúp thi công đúng vị trí và đúng cách nối dây.')]}
+};
+[6,7,8,9].forEach(function(g){var X=EXTRA[g];DATA[g].zones.forEach(function(z,i){z.ch=z.ch.concat(X.z[i]||[])});DATA[g].bossq=DATA[g].bossq.concat(X.boss)});
+
+/* Bốc ngẫu nhiên: ưu tiên câu chưa gặp ở các lượt chơi trước và đa dạng dạng bài */
+function pickSet(pool,n,key,seen){
+  var items=pool.map(function(c,i){return{c:c,id:key+'.'+i}});
+  var fresh=items.filter(function(x){return x.c.gen||!seen[x.id]});
+  var cand=fresh.length>=n?shuffle(fresh):shuffle(fresh).concat(shuffle(items.filter(function(x){return fresh.indexOf(x)<0})));
+  var out=[],types={};
+  cand.forEach(function(x){if(out.length>=n)return;var t=x.c.gen?'quiz':x.c.t;if(!types[t]){types[t]=1;out.push(x)}});
+  cand.forEach(function(x){if(out.length>=n||out.indexOf(x)>=0)return;out.push(x)});
+  if(fresh.length<n)items.forEach(function(x){delete seen[x.id]});
+  return shuffle(out).map(function(x){if(!x.c.gen)seen[x.id]=1;return x.c.gen?x.c.gen():x.c});
+}
+
+var BOSSTIP='Trả lời đúng cả 4 câu để hoàn thành hành trình. Ở cổng cuối, mỗi câu chỉ có một lượt trả lời.';
+var TYPES={quiz:'Trắc nghiệm',tf:'Đúng – Sai',match:'Ghép đôi',order:'Sắp xếp',fill:'Điền khuyết',grid:'Chọn ô',sort:'Phân loại',scramble:'Xếp chữ'};
+var AVATARS=['👷','🤖','🦊','🐼','🐯'];
+var ZCOL=['#0d2b49','#0f3447','#13294b','#113a3d','#1a2c48'];
+
+/* ====================== ÂM THANH ====================== */
+var AC=null,muted=false;
+function sfx(k){
+  if(muted)return;
+  try{
+    AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+    if(AC.state==='suspended')AC.resume();
+    var t=AC.currentTime;
+    var seq={ok:[[660,0],[880,.09]],bad:[[220,0],[150,.12]],coin:[[1200,0],[1600,.05]],win:[[523,0],[659,.12],[784,.24],[1047,.36]],open:[[400,0],[600,.08],[800,.16]]}[k]||[];
+    seq.forEach(function(n){
+      var o=AC.createOscillator(),g=AC.createGain();
+      o.type=k==='bad'?'sawtooth':'triangle';o.frequency.value=n[0];
+      g.gain.setValueAtTime(.0001,t+n[1]);
+      g.gain.exponentialRampToValueAtTime(.1,t+n[1]+.01);
+      g.gain.exponentialRampToValueAtTime(.0001,t+n[1]+.15);
+      o.connect(g);g.connect(AC.destination);o.start(t+n[1]);o.stop(t+n[1]+.17);
+    });
+  }catch(e){}
+}
+
+/* ====================== LƯU TRỮ ====================== */
+function lsGet(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+
+/* ====================== MÀN HÌNH BẮT ĐẦU ====================== */
+var selGrade=6,selAv=0;
+var GRADE_HINT={6:'Nhà ở · Thực phẩm · Trang phục · Điện',7:'Trồng trọt · Lâm nghiệp · Chăn nuôi · Thủy sản',8:'Vẽ kĩ thuật · Cơ khí · Điện',9:'Hướng nghiệp · Mạng điện · Cây ăn quả'};
+function buildStart(){
+  var last=lsGet('cn_last',null);
+  if(last){selGrade=last.g||6;selAv=last.a||0;$('#nick').value=last.n||''}
+  var gb=$('#grades');gb.innerHTML='';
+  [6,7,8,9].forEach(function(g){
+    var b=h('button','gbtn');b.type='button';b.append(document.createTextNode(String(g)));
+    b.setAttribute('aria-pressed',g===selGrade?'true':'false');
+    b.onclick=function(){selGrade=g;buildStart.refresh()};
+    gb.append(b);
+  });
+  var ab=$('#avatars');ab.innerHTML='';
+  AVATARS.forEach(function(a,i){
+    var b=h('button','av',a);b.type='button';b.setAttribute('aria-pressed',i===selAv?'true':'false');b.setAttribute('aria-label','Nhân vật '+(i+1));
+    b.onclick=function(){selAv=i;buildStart.refresh()};ab.append(b);
+  });
+  buildStart.refresh();
+  renderLB($('#lbbody'),$('#lbbox'),null);
+}
+buildStart.refresh=function(){
+  var gs=$('#grades').children;for(var i=0;i<gs.length;i++)gs[i].setAttribute('aria-pressed',(i+6)===selGrade?'true':'false');
+  var as=$('#avatars').children;for(var j=0;j<as.length;j++)as[j].setAttribute('aria-pressed',j===selAv?'true':'false');
+  var zp=$('#zprev');zp.innerHTML='';
+  DATA[selGrade].zones.forEach(function(z,i){zp.append(h('span','pill','Chương '+(i+1)+' · '+z.name))});
+};
+function renderLB(tbody,box,mine){
+  var lb=lsGet('cn_lb',[]);
+  if(!lb.length){box.hidden=true;return}
+  box.hidden=false;tbody.innerHTML='';
+  lb.slice(0,5).forEach(function(r){
+    var tr=h('tr',mine&&r.id===mine?'me':'');
+    tr.append(h('td','',(r.av||'')+' '+r.n),h('td','','Lớp '+r.g),h('td','',String(r.s)));
+    tbody.append(tr);
+  });
+}
+
+/* ====================== TRẠNG THÁI GAME ====================== */
+var WH=640,ZW=1500,GOFF=[450,900,1350],R=15;
+var cv=$('#cv'),ctx=cv.getContext('2d');
+var S=null,vw=0,vh=0,dpr=1,zoom=1,cam={x:0,y:0},keys={},joy={x:0,y:0},paused=true,modalOpen=false,raf=0,last=0,tAnim=0;
+var particles=[],stripe=null;
+
+function startGame(){
+  var nick=$('#nick').value.trim().slice(0,16);
+  if(!nick){$('#err').textContent='Hãy nhập biệt danh của bạn để bắt đầu.';$('#nick').focus();return}
+  $('#err').textContent='';
+  lsSet('cn_last',{g:selGrade,n:nick,a:selAv});
+  var D=DATA[selGrade],nZ=D.zones.length;
+  S={grade:selGrade,name:nick,av:AVATARS[selAv],hearts:5,score:0,streak:0,time:0,over:false,
+     zones:D.zones,nZ:nZ,worldW:nZ*ZW+420,gates:[],coins:[],pick:[],decor:[],stat:[],firstTry:0,done:0,total:0,curZone:-1,
+     hero:{x:110,y:WH/2,bob:0},npc:[],coinsGot:0};
+  var gi=0,seen=lsGet('cn_seen',{}),Dz=D.zones.map(function(z,zi){return pickSet(z.ch,3,selGrade+'z'+zi,seen)}),bossPick=pickSet(D.bossq,4,selGrade+'b',seen);
+  lsSet('cn_seen',seen);
+  D.zones.forEach(function(z,zi){
+    S.stat.push({t:0,f:0});
+    Dz[zi].forEach(function(c,k){S.gates.push({x:zi*ZW+GOFF[k],zi:zi,k:k,ch:c,solved:false,open:0,cool:0});S.total++});
+    S.npc.push({x:zi*ZW+190,y:WH/2-150,tip:z.tip});
+  });
+  S.stat.push({t:0,f:0});
+  S.gates.push({x:nZ*ZW+260,zi:nZ,k:0,ch:null,boss:true,bq:bossPick,bi:0,solved:false,open:0,cool:0});
+  S.total+=bossPick.length;
+  S.npc.push({x:nZ*ZW+90,y:WH/2-140,tip:BOSSTIP});
+  // vật phẩm và trang trí
+  var rnd=mulberry(selGrade*977+nZ);
+  D.zones.forEach(function(z,zi){
+    for(var i=0;i<26;i++)S.decor.push({x:zi*ZW+rnd()*ZW,y:30+rnd()*(WH-60),e:z.em[Math.floor(rnd()*z.em.length)],s:24+rnd()*20});
+    for(var c=0;c<9;c++){
+      var cx=0,tries=0;
+      do{cx=zi*ZW+130+rnd()*(ZW-230);tries++}while(tries<20&&S.gates.some(function(g){return Math.abs(g.x-cx)<60}));
+      S.coins.push({x:cx,y:70+rnd()*(WH-140),got:false,ph:rnd()*6});
+    }
+    var hx=zi*ZW+GOFF[0]+100+rnd()*240;
+    S.pick.push({x:hx,y:90+rnd()*(WH-180),got:false});
+  });
+  var ar=['🏁','⭐','🎓','🏆','🛠️'];
+  for(var a=0;a<14;a++)S.decor.push({x:nZ*ZW+rnd()*420,y:30+rnd()*(WH-60),e:ar[Math.floor(rnd()*ar.length)],s:26+rnd()*18});
+  S.decor.sort(function(a,b){return a.y-b.y});
+  // giao diện
+  $('#hav').textContent=S.av;$('#hnm').textContent=S.name;$('#hgr').textContent='Lớp '+S.grade;
+  var pg=$('#prog');pg.querySelectorAll('.tick').forEach(function(t){t.remove()});
+  S.gates.forEach(function(g){var t=h('div','tick'+(g.boss?' boss':''));t.style.left=(g.x/S.worldW*100)+'%';g._t=t;pg.insertBefore(t,$('#pdot'))});
+  buildHearts();updateHUD();
+  $('#start').hidden=true;$('#end').hidden=true;$('#game').hidden=false;
+  keys={};joy.x=joy.y=0;particles=[];
+  layout();paused=false;modalOpen=false;last=performance.now();
+  cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);
+  S.curZone=-1;
+}
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+
+function buildHearts(){var hb=$('#hearts');hb.innerHTML='';for(var i=0;i<5;i++)hb.append(h('i','','♥'))}
+function updateHUD(){
+  var hs=$('#hearts').children;for(var i=0;i<hs.length;i++)hs[i].className=i<S.hearts?'':'off';
+  $('#hsc').textContent=S.score;
+}
+
+/* ====================== VẼ & VÒNG LẶP ====================== */
+function layout(){
+  var r=cv.parentElement.getBoundingClientRect();vw=Math.max(1,r.width);vh=Math.max(1,r.height);
+  dpr=Math.min(2,window.devicePixelRatio||1);cv.width=Math.round(vw*dpr);cv.height=Math.round(vh*dpr);
+  cv.style.width=vw+'px';cv.style.height=vh+'px';
+  zoom=clamp(Math.min(vh/560,vw/420),.7,1.25);
+}
+function getStripe(){
+  if(stripe)return stripe;
+  var c=document.createElement('canvas');c.width=c.height=32;var g=c.getContext('2d');
+  g.fillStyle='#ff7a1a';g.fillRect(0,0,32,32);g.fillStyle='#1c0d00';
+  g.beginPath();g.moveTo(0,16);g.lineTo(16,0);g.lineTo(32,0);g.lineTo(0,32);g.closePath();g.fill();
+  g.beginPath();g.moveTo(32,16);g.lineTo(32,32);g.lineTo(16,32);g.closePath();g.fill();
+  stripe=ctx.createPattern(c,'repeat');return stripe;
+}
+function curGate(){for(var i=0;i<S.gates.length;i++)if(!S.gates[i].solved)return S.gates[i];return null}
+
+function update(dt){
+  S.time+=dt;tAnim+=dt;
+  var H=S.hero,dx=0,dy=0;
+  if(keys.ArrowLeft||keys.a)dx-=1;if(keys.ArrowRight||keys.d)dx+=1;if(keys.ArrowUp||keys.w)dy-=1;if(keys.ArrowDown||keys.s)dy+=1;
+  if(!dx&&!dy){dx=joy.x;dy=joy.y}
+  var m=Math.hypot(dx,dy);
+  if(m>1){dx/=m;dy/=m}
+  var sp=205;
+  H.x+=dx*sp*dt;H.y+=dy*sp*dt;
+  if(m>.05)H.bob+=dt*14;
+  H.x=clamp(H.x,R+6,S.worldW-R-6);H.y=clamp(H.y,34,WH-34);
+  S.gates.forEach(function(g){if(g.cool>0)g.cool-=dt;if(g.solved&&g.open<1)g.open=Math.min(1,g.open+dt*1.6)});
+  var g=curGate();
+  if(g){
+    var lim=g.x-17-R;
+    if(H.x>lim){H.x=lim;if(g.cool<=0&&!modalOpen)openGate(g)}
+  }
+  S.coins.forEach(function(c){if(!c.got&&Math.hypot(c.x-H.x,c.y-H.y)<28){c.got=true;S.score+=10;S.coinsGot++;sfx('coin');updateHUD()}});
+  S.pick.forEach(function(p){if(!p.got&&Math.hypot(p.x-H.x,p.y-H.y)<30){p.got=true;if(S.hearts<5){S.hearts++;updateHUD()}sfx('ok');burst(p.x,p.y,'#ff6b6b',14)}});
+  var zi=Math.min(S.nZ,Math.floor(H.x/ZW));
+  if(zi!==S.curZone){S.curZone=zi;showBanner(zi)}
+  var near=null;S.npc.forEach(function(n,i){if(Math.hypot(n.x-H.x,n.y-H.y)<120)near=n});
+  var tip=$('#tip');
+  if(near){if(tip.hidden){tip.hidden=false}$('#tiptx').textContent=near.tip}else if(!tip.hidden)tip.hidden=true;
+  $('#pdot').style.left=(H.x/S.worldW*100)+'%';
+  for(var i=particles.length-1;i>=0;i--){var p=particles[i];p.life-=dt;if(p.life<=0){particles.splice(i,1);continue}p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=380*dt}
+}
+function showBanner(zi){
+  var b=$('#banner');
+  $('#bnk').textContent=zi<S.nZ?'Chương '+(zi+1)+' / '+S.nZ:'Chặng cuối';
+  $('#bnt').textContent=zi<S.nZ?S.zones[zi].name:DATA[S.grade].boss;
+  $('#zlabel').textContent=(zi<S.nZ?'Chương '+(zi+1)+' · '+S.zones[zi].name:DATA[S.grade].boss);
+  b.hidden=true;void b.offsetWidth;b.hidden=false;
+  clearTimeout(showBanner.t);showBanner.t=setTimeout(function(){b.hidden=true},3300);
+}
+function burst(x,y,col,n){for(var i=0;i<n;i++){var a=Math.random()*6.28,v=80+Math.random()*180;particles.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-120,life:.8+Math.random()*.5,c:col||['#ffd24a','#3ddc97','#59c3ff','#ff8fb1'][i%4]})}}
+
+function draw(){
+  var W=vw/zoom,Hh=vh/zoom,H=S.hero;
+  cam.x=S.worldW<=W?(S.worldW-W)/2:clamp(H.x-W/2,0,S.worldW-W);
+  cam.y=WH<=Hh?(WH-Hh)/2:clamp(H.y-Hh/2,0,WH-Hh);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.fillStyle='#06121f';ctx.fillRect(0,0,vw,vh);
+  ctx.save();ctx.scale(zoom,zoom);ctx.translate(-cam.x,-cam.y);
+  var x0=cam.x,x1=cam.x+W;
+  // nền theo chương
+  for(var zi=0;zi<=S.nZ;zi++){
+    var zx=zi*ZW,zw=zi<S.nZ?ZW:420;
+    if(zx>x1||zx+zw<x0)continue;
+    ctx.fillStyle=zi<S.nZ?ZCOL[zi%ZCOL.length]:'#231a3d';ctx.fillRect(zx,0,zw,WH);
+    ctx.fillStyle='rgba(255,255,255,.035)';ctx.fillRect(zx,WH/2-95,zw,190);
+  }
+  // lưới bản vẽ
+  ctx.strokeStyle='rgba(120,180,230,.09)';ctx.lineWidth=1;ctx.beginPath();
+  var gx=Math.floor(x0/64)*64;for(;gx<x1;gx+=64){ctx.moveTo(gx,0);ctx.lineTo(gx,WH)}
+  for(var gy=0;gy<=WH;gy+=64){ctx.moveTo(x0,gy);ctx.lineTo(x1,gy)}
+  ctx.stroke();
+  // đường tâm chấm gạch
+  ctx.save();ctx.setLineDash([22,6,4,6]);ctx.strokeStyle='rgba(234,243,251,.22)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(x0,WH/2);ctx.lineTo(x1,WH/2);ctx.stroke();ctx.restore();
+  // viền thế giới
+  ctx.strokeStyle='rgba(255,122,26,.7)';ctx.lineWidth=3;ctx.strokeRect(1.5,1.5,S.worldW-3,WH-3);
+  // biển chương
+  ctx.textBaseline='alphabetic';
+  for(var z=0;z<S.nZ;z++){
+    var sx=z*ZW+36;if(sx>x1||sx+420<x0)continue;
+    ctx.fillStyle='#ff7a1a';ctx.font='700 14px "Chakra Petch",system-ui,sans-serif';ctx.fillText('CHƯƠNG '+(z+1),sx,58);
+    ctx.fillStyle='#eaf3fb';ctx.font='700 26px "Chakra Petch",system-ui,sans-serif';wrapText(S.zones[z].name,sx,88,380,30);
+  }
+  if(S.nZ*ZW+30<x1){ctx.fillStyle='#ffd24a';ctx.font='700 14px "Chakra Petch",system-ui,sans-serif';ctx.fillText('CHẶNG CUỐI',S.nZ*ZW+36,58);ctx.fillStyle='#eaf3fb';ctx.font='700 26px "Chakra Petch",system-ui,sans-serif';ctx.fillText(DATA[S.grade].boss,S.nZ*ZW+36,88)}
+  // trang trí
+  ctx.textAlign='center';ctx.textBaseline='middle';ctx.globalAlpha=.55;
+  S.decor.forEach(function(d){if(d.x<x0-40||d.x>x1+40)return;ctx.font=d.s+'px system-ui,"Apple Color Emoji","Segoe UI Emoji",sans-serif';ctx.fillText(d.e,d.x,d.y)});
+  ctx.globalAlpha=1;
+  // npc
+  S.npc.forEach(function(n){if(n.x<x0-50||n.x>x1+50)return;ctx.font='38px system-ui,"Apple Color Emoji","Segoe UI Emoji",sans-serif';ctx.fillText('🤖',n.x,n.y+Math.sin(tAnim*2+n.x)*3);ctx.font='700 15px "Chakra Petch",sans-serif';ctx.fillStyle='#ffd24a';ctx.fillText('?',n.x+24,n.y-22)});
+  // xu và tim
+  S.coins.forEach(function(c){
+    if(c.got||c.x<x0-20||c.x>x1+20)return;
+    var sc=Math.abs(Math.cos(tAnim*3+c.ph))*.8+.2;
+    ctx.fillStyle='#ffd24a';ctx.beginPath();ctx.ellipse(c.x,c.y,9*sc,9,0,0,6.283);ctx.fill();
+    ctx.strokeStyle='#b8860b';ctx.lineWidth=2;ctx.stroke();
+  });
+  S.pick.forEach(function(p){if(p.got||p.x<x0-20||p.x>x1+20)return;ctx.font='700 '+(26+Math.sin(tAnim*4)*2)+'px system-ui,sans-serif';ctx.fillStyle='#ff6b6b';ctx.fillText('♥',p.x,p.y)});
+  // cổng
+  S.gates.forEach(function(g){
+    if(g.x<x0-60||g.x>x1+60)return;
+    var hgt=WH*(1-g.open);if(hgt<=1)return;
+    ctx.fillStyle=getStripe();ctx.fillRect(g.x-17,0,34,hgt);
+    ctx.strokeStyle='#1c0d00';ctx.lineWidth=3;ctx.strokeRect(g.x-17,0,34,hgt);
+    if(g.open<.2){
+      ctx.fillStyle='#0e2842';ctx.fillRect(g.x-42,WH/2-44,84,88);ctx.strokeStyle='#ff7a1a';ctx.lineWidth=2.5;ctx.strokeRect(g.x-42,WH/2-44,84,88);
+      ctx.fillStyle='#eaf3fb';ctx.font='28px system-ui,"Apple Color Emoji",sans-serif';ctx.fillText('🔒',g.x,WH/2-18);
+      ctx.font='700 12px "Chakra Petch",system-ui,sans-serif';
+      ctx.fillStyle='#ffd24a';ctx.fillText(g.boss?'THỬ THÁCH CUỐI':'Cổng '+(g.k+1)+'/3',g.x,WH/2+10);
+      ctx.fillStyle='#9db8d0';ctx.font='11px "Be Vietnam Pro",system-ui,sans-serif';ctx.fillText(g.boss?'4 câu hỏi':TYPES[g.ch.t],g.x,WH/2+28);
+    }
+  });
+  // nhân vật
+  var bob=Math.sin(H.bob)*3;
+  ctx.fillStyle='rgba(0,0,0,.35)';ctx.beginPath();ctx.ellipse(H.x,H.y+18,15,6,0,0,6.283);ctx.fill();
+  ctx.font='42px system-ui,"Apple Color Emoji","Segoe UI Emoji",sans-serif';ctx.fillText(S.av,H.x,H.y-2+bob);
+  // hạt
+  particles.forEach(function(p){ctx.globalAlpha=clamp(p.life*2,0,1);ctx.fillStyle=p.c;ctx.fillRect(p.x,p.y,6,6)});
+  ctx.globalAlpha=1;
+  ctx.restore();
+}
+function wrapText(t,x,y,maxW,lh){
+  ctx.textAlign='left';ctx.textBaseline='alphabetic';
+  var words=t.split(' '),line='',yy=y;
+  words.forEach(function(w){var test=line?line+' '+w:w;if(ctx.measureText(test).width>maxW&&line){ctx.fillText(line,x,yy);line=w;yy+=lh}else line=test});
+  ctx.fillText(line,x,yy);ctx.textAlign='center';ctx.textBaseline='middle';
+}
+function loop(now){
+  raf=requestAnimationFrame(loop);
+  if(!S)return;
+  var dt=Math.min(.05,(now-last)/1000);last=now;
+  if(!paused&&!modalOpen&&!S.over)update(dt);else tAnim+=dt;
+  draw();
+}
+
+/* ====================== ĐIỀU KHIỂN ====================== */
+window.addEventListener('keydown',function(e){
+  if(!S||$('#game').hidden)return;
+  var k=e.key.length===1?e.key.toLowerCase():e.key;
+  if(k==='Escape'){if(!modalOpen)togglePause();return}
+  if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','a','d','w','s'].indexOf(k)>=0){keys[k]=true;if(k.length>1&&!modalOpen)e.preventDefault()}
+});
+window.addEventListener('keyup',function(e){var k=e.key.length===1?e.key.toLowerCase():e.key;keys[k]=false});
+window.addEventListener('blur',function(){keys={}});
+document.addEventListener('visibilitychange',function(){if(document.hidden&&S&&!S.over&&!$('#game').hidden&&!modalOpen&&!paused)togglePause()});
+window.addEventListener('resize',function(){if(S)layout()});
+window.addEventListener('touchstart',function(){document.documentElement.classList.add('touch')},{once:true,passive:true});
+if(window.matchMedia&&window.matchMedia('(hover:none) and (pointer:coarse)').matches)document.documentElement.classList.add('touch');
+(function(){
+  var jb=$('#joy'),kn=$('#knob'),jid=null,JR=46;
+  function mv(e){var r=jb.getBoundingClientRect(),dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2),d=Math.hypot(dx,dy),m=Math.min(d,JR);if(d>0){dx=dx/d*m;dy=dy/d*m}joy.x=dx/JR;joy.y=dy/JR;kn.style.transform='translate(calc(-50% + '+dx+'px), calc(-50% + '+dy+'px))'}
+  function end(e){if(e.pointerId===jid){jid=null;joy.x=joy.y=0;kn.style.transform='translate(-50%,-50%)'}}
+  jb.addEventListener('pointerdown',function(e){jid=e.pointerId;try{jb.setPointerCapture(e.pointerId)}catch(x){}mv(e);e.preventDefault()});
+  jb.addEventListener('pointermove',function(e){if(e.pointerId===jid)mv(e)});
+  jb.addEventListener('pointerup',end);jb.addEventListener('pointercancel',end);
+})();
+function togglePause(){
+  if(!S||S.over)return;
+  paused=!paused;$('#pause').hidden=!paused;keys={};joy.x=joy.y=0;
+  if(paused)$('#pres').focus();
+}
+$('#bpause').onclick=togglePause;$('#pres').onclick=togglePause;
+$('#phome').onclick=function(){goHome()};
+$('#bsnd').onclick=function(){muted=!muted;$('#bsnd').style.opacity=muted?.45:1;$('#bsnd').textContent=muted?'×':'♪'};
+function goHome(){
+  $('#pause').hidden=true;$('#modal').hidden=true;modalOpen=false;paused=true;
+  if(S)S.over=true;
+  $('#game').hidden=true;$('#end').hidden=true;$('#start').hidden=false;
+  renderLB($('#lbbody'),$('#lbbox'),null);
+}
+
+/* ====================== THỬ THÁCH ====================== */
+function mQuiz(box,ch,api){
+  var btns=[];
+  shuffle(ch.o.map(function(_,i){return i})).forEach(function(oi,k){
+    var b=h('button','opt');b.type='button';b.append(h('span','k','ABCD'[k]),h('span','',ch.o[oi]));b._oi=oi;
+    b.onclick=function(){
+      if(b.disabled)return;var ok=oi===ch.a;b.classList.add(ok?'ok':'bad');b.disabled=true;
+      if(ok)btns.forEach(function(x){x.disabled=true});api.submit(ok);
+    };
+    btns.push(b);box.append(b);
+  });
+  return{retry:function(){},reveal:function(){btns.forEach(function(b){b.disabled=true;if(b._oi===ch.a)b.classList.add('ok')})}};
+}
+function mTF(box,ch,api){
+  var val=ch.s.map(function(){return null}),rows=[];
+  function paint(i){var r=rows[i];r.r.classList.remove('bad','ok');r.bt.classList.toggle('on',val[i]===true);r.bf.classList.toggle('on',val[i]===false)}
+  function set(i,v){val[i]=v;paint(i);api.ready(val.every(function(x){return x!==null}))}
+  shuffle(ch.s.map(function(_,i){return i})).forEach(function(i){
+    var st=ch.s[i],r=h('div','row'),t=h('div','rt',st[0]),bw=h('div','tfb'),bt=h('button','tfo','Đúng'),bf=h('button','tfo','Sai');
+    bt.type=bf.type='button';bt.onclick=function(){set(i,true)};bf.onclick=function(){set(i,false)};
+    bw.append(bt,bf);r.append(t,bw);box.append(r);rows[i]={r:r,bt:bt,bf:bf};
+  });
+  return{
+    check:function(){var ok=true;ch.s.forEach(function(st,i){var g=val[i]===st[1];rows[i].r.classList.toggle('bad',!g);rows[i].r.classList.toggle('ok',g);if(!g)ok=false});return ok},
+    retry:function(){},
+    reveal:function(){ch.s.forEach(function(st,i){val[i]=st[1];paint(i);rows[i].r.classList.add('ok')});box.querySelectorAll('button').forEach(function(b){b.disabled=true})}
+  };
+}
+function mMatch(box,ch,api){
+  var n=ch.p.length,pair=[],sel=-1,done=false;for(var q=0;q<n;q++)pair.push(-1);
+  var rOrder=shuffle(ch.p.map(function(_,i){return i}));
+  var wrap=h('div','mcols'),cl=h('div','mcol'),cr=h('div','mcol');wrap.append(cl,cr);box.append(wrap);
+  var lb=[];shuffle(ch.p.map(function(_,i){return i})).forEach(function(i){var b=h('button','mi',ch.p[i][0]);b.type='button';b.onclick=function(){if(done)return;if(pair[i]>=0){pair[i]=-1;sel=-1}else sel=(sel===i?-1:i);render()};cl.append(b);lb[i]=b});
+  var rb=rOrder.map(function(ri){var b=h('button','mi',ch.p[ri][1]);b.type='button';b.onclick=function(){if(done)return;var o=pair.indexOf(ri);if(o>=0){pair[o]=-1;render();return}if(sel>=0){pair[sel]=ri;sel=-1;render()}};cr.append(b);return b});
+  function render(){
+    lb.forEach(function(b,i){b.className='mi'+(pair[i]>=0?' paired c'+i:(sel===i?' sel':''))});
+    rb.forEach(function(b,k){var o=pair.indexOf(rOrder[k]);b.className='mi'+(o>=0?' paired c'+o:'')});
+    api.ready(pair.every(function(x){return x>=0}));
+  }
+  render();
+  box.append(h('div','note','Chạm một ô bên trái, rồi chạm ô bên phải để ghép. Chạm lại ô đã ghép để gỡ.'));
+  return{
+    check:function(){var ok=true;pair.forEach(function(ri,i){var g=ri===i;if(!g){ok=false;lb[i].classList.add('bad');var k=rOrder.indexOf(ri);if(k>=0)rb[k].classList.add('bad')}});return ok},
+    retry:function(){},
+    reveal:function(){done=true;for(var i=0;i<n;i++)pair[i]=i;render();lb.concat(rb).forEach(function(b){b.classList.add('ok');b.disabled=true})}
+  };
+}
+function mOrder(box,ch,api){
+  var n=ch.s.length,ord=shuffle(ch.s.map(function(_,i){return i}));
+  while(n>1&&ord.every(function(v,i){return v===i}))ord=shuffle(ord);
+  var ans=[],mark=[],done=false;
+  var area=h('div','oslots'),pool=h('div','opool');box.append(area,pool);
+  function render(){
+    area.innerHTML='';pool.innerHTML='';
+    for(var k=0;k<n;k++)(function(k){
+      var has=ans[k]!==undefined,s=h('button','oslot'+(has?' fill':'')+(mark[k]?' '+mark[k]:''));s.type='button';
+      s.append(h('b','',String(k+1)),h('span','',has?ch.s[ans[k]]:''));
+      s.onclick=function(){if(done||!has)return;ans.splice(k,1);mark=[];render()};area.append(s);
+    })(k);
+    ord.forEach(function(i){if(ans.indexOf(i)>=0)return;var c=h('button','chip',ch.s[i]);c.type='button';c.onclick=function(){if(done)return;ans.push(i);mark=[];render()};pool.append(c)});
+    api.ready(ans.length===n);
+  }
+  render();
+  return{
+    check:function(){mark=ans.map(function(v,k){return v===k?'ok':'bad'});render();return ans.every(function(v,k){return v===k})},
+    retry:function(){},
+    reveal:function(){done=true;ans=ch.s.map(function(_,i){return i});mark=ans.map(function(){return 'ok'});render()}
+  };
+}
+function mFill(box,ch,api){
+  var parts=ch.q.split('___'),nb=ch.b.length,slots=[],mark=[],done=false;for(var i=0;i<nb;i++)slots.push(-1);
+  var bank=shuffle(ch.w.map(function(_,i){return i}));
+  var sent=h('div','fsent'),bk=h('div','opool');box.append(sent,bk);
+  function render(){
+    sent.innerHTML='';
+    parts.forEach(function(p,i){
+      sent.append(document.createTextNode(p));
+      if(i<nb){var s=h('button','fslot'+(mark[i]?' '+mark[i]:''),slots[i]>=0?ch.w[slots[i]]:'      ');s.type='button';s.onclick=function(){if(done||slots[i]<0)return;slots[i]=-1;mark=[];render()};sent.append(s)}
+    });
+    bk.innerHTML='';
+    bank.forEach(function(wi){if(slots.indexOf(wi)>=0)return;var c=h('button','chip',ch.w[wi]);c.type='button';c.onclick=function(){if(done)return;var e=slots.indexOf(-1);if(e<0)return;slots[e]=wi;mark=[];render()};bk.append(c)});
+    api.ready(slots.every(function(x){return x>=0}));
+  }
+  render();
+  return{
+    check:function(){mark=slots.map(function(s,i){return ch.w[s]===ch.b[i]?'ok':'bad'});render();return mark.every(function(m){return m==='ok'})},
+    retry:function(){},
+    reveal:function(){done=true;slots=ch.b.map(function(w){return ch.w.indexOf(w)});mark=slots.map(function(){return 'ok'});render()}
+  };
+}
+function mGrid(box,ch,api){
+  var sel={},A={},done=false,bs=[];ch.a.forEach(function(i){A[i]=true});
+  box.append(h('div','note','Có '+ch.a.length+' ô đúng. Chạm để chọn, chạm lại để bỏ chọn.'));
+  var g=h('div','grid');box.append(g);
+  shuffle(ch.c.map(function(_,i){return i})).forEach(function(i){
+    var b=h('button','cell',ch.c[i]);b.type='button';b._i=i;
+    b.onclick=function(){if(done)return;if(sel[i])delete sel[i];else sel[i]=true;b.className='cell'+(sel[i]?' on':'');api.ready(Object.keys(sel).length>0)};
+    bs.push(b);g.append(b);
+  });
+  return{
+    check:function(){var ok=true;bs.forEach(function(b){var i=b._i,has=!!sel[i],want=!!A[i];b.className='cell'+(has?' on':'');if(has&&!want){b.classList.add('bad');ok=false}if(has&&want)b.classList.add('ok');if(!has&&want)ok=false});return ok},
+    retry:function(){},
+    reveal:function(){done=true;bs.forEach(function(b){b.className='cell'+(A[b._i]?' on ok':'');b.disabled=true})}
+  };
+}
+function mSort(box,ch,api){
+  var q=shuffle(ch.i),k=0,mist=0,done=false;
+  var prog=h('div','sprog'),card=h('div','scard'),opts=h('div','sopts');box.append(prog,card,opts);
+  ch.k.forEach(function(name,ci){
+    var b=h('button','sbtn',name);b.type='button';
+    b.onclick=function(){
+      if(done)return;
+      if(ci===q[k][1]){
+        k++;
+        if(k>=q.length){done=true;card.textContent='Đã phân loại xong';show();api.submit(mist===0)}else show();
+      }else{
+        mist++;sfx('bad');card.classList.remove('shake');void card.offsetWidth;card.classList.add('shake');
+        b.classList.add('bad');setTimeout(function(){b.classList.remove('bad')},450);show();
+      }
+    };
+    opts.append(b);
+  });
+  function show(){prog.textContent=Math.min(k+1,q.length)+' / '+q.length+' · Số lần chọn sai: '+mist;if(!done)card.textContent=q[k][0]}
+  show();
+  return{
+    retry:function(){q=shuffle(ch.i);k=0;mist=0;done=false;show()},
+    reveal:function(){done=true;card.textContent='Đáp án đã hiện ở bên dưới';box.append(h('div','note',ch.k.map(function(n,ci){return n+': '+ch.i.filter(function(x){return x[1]===ci}).map(function(x){return x[0]}).join(', ')}).join('  |  ')))}
+  };
+}
+function mScr(box,ch,api){
+  var letters=Array.from(ch.w).filter(function(c){return c!==' '}),n=letters.length,words=ch.w.split(' ');
+  var pool=shuffle(letters.map(function(_,i){return i}));
+  for(var t=0;t<6&&pool.every(function(v,i){return letters[v]===letters[i]});t++)pool=shuffle(pool);
+  var ans=[],mark=null,done=false;
+  var area=h('div','wslots'),pl=h('div','opool');box.append(area,pl);
+  function render(){
+    area.innerHTML='';pl.innerHTML='';var pos=0;
+    words.forEach(function(w){
+      var g=h('div','wg');
+      for(var j=0;j<Array.from(w).length;j++)(function(p){
+        var has=ans[p]!==undefined,s=h('button','wl'+(has?' fill':'')+(mark?(mark[p]?' ok':' bad'):''),has?letters[ans[p]]:'');s.type='button';
+        s.onclick=function(){if(done||!has)return;ans.splice(p,1);mark=null;render()};g.append(s);
+      })(pos++);
+      area.append(g);
+    });
+    pool.forEach(function(i){if(ans.indexOf(i)>=0)return;var c=h('button','chip lt',letters[i]);c.type='button';c.onclick=function(){if(done)return;ans.push(i);mark=null;render()};pl.append(c)});
+    api.ready(ans.length===n);
+  }
+  render();
+  return{
+    check:function(){mark=ans.map(function(v,p){return letters[v]===letters[p]});render();return mark.every(Boolean)},
+    retry:function(){},
+    reveal:function(){done=true;ans=letters.map(function(_,i){return i});mark=ans.map(function(){return true});render()}
+  };
+}
+var MOD={quiz:mQuiz,tf:mTF,match:mMatch,order:mOrder,fill:mFill,grid:mGrid,sort:mSort,scramble:mScr};
+
+var CH=null;
+function runChallenge(ch,opt,cb){
+  CH={ch:ch,opt:opt,cb:cb,att:0,t0:performance.now(),ended:false,mod:null,fin:false};
+  modalOpen=true;keys={};joy.x=joy.y=0;
+  $('#mzone').textContent=opt.zone;$('#mtype').textContent=TYPES[ch.t];
+  $('#mprompt').textContent=ch.t==='fill'?'Chạm vào từ để điền vào chỗ trống.':ch.q;
+  var box=$('#mbody');box.innerHTML='';
+  $('#mfb').hidden=true;$('#cont').hidden=true;$('#chk').hidden=true;$('#chk').disabled=true;$('#back').hidden=false;
+  $('#cont').textContent=opt.more?'Câu tiếp theo':'Tiếp tục';
+  var api={submit:onSubmit,ready:function(v){$('#chk').disabled=!v}};
+  CH.mod=MOD[ch.t](box,ch,api);
+  if(CH.mod.check)$('#chk').hidden=false;
+  mh();$('#modal').hidden=false;
+  clearInterval(CH.timer);CH.timer=setInterval(function(){if(CH&&!CH.fin)$('#mtime').textContent=Math.floor((performance.now()-CH.t0)/1000)+' giây'},500);
+  $('#mtime').textContent='0 giây';
+  $('#mprompt').scrollIntoView&&0;
+  var cardEl=$('#modal .card');cardEl.scrollTop=0;
+}
+function mh(){var s='';for(var i=0;i<5;i++)s+=i<S.hearts?'♥':'♡';$('#mheart').textContent=s;$('#mheart').style.color='var(--bad)'}
+function showFB(kind,title,msg){
+  var f=$('#mfb');f.hidden=false;f.className='fb '+kind;f.innerHTML='';
+  f.append(h('b','',title));if(msg)f.append(document.createTextNode(msg));
+}
+function onSubmit(ok){
+  if(!CH||CH.fin)return;
+  var o=CH.opt,ch=CH.ch;
+  if(ok){
+    var first=CH.att===0,el=(performance.now()-CH.t0)/1000,pts=0,msg='';
+    if(first){
+      var tb=clamp(Math.round(o.bonus-el/2),0,o.bonus);S.streak++;var sb=Math.min(25,(S.streak-1)*5);
+      pts=o.pts+tb+sb;msg='+'+o.pts+' điểm'+(tb?' · thưởng nhanh +'+tb:'')+(sb?' · chuỗi đúng +'+sb:'');
+      S.firstTry++;S.stat[o.zi].f++;
+    }else{pts=Math.round(o.pts/2);S.streak=0;msg='+'+pts+' điểm (đúng ở lần thử thứ hai)'}
+    S.score+=pts;S.stat[o.zi].t++;S.done++;
+    finish();sfx('ok');
+    showFB('ok','Chính xác!',msg+(ch.e?'. '+ch.e:''));
+    updateHUD();
+  }else{
+    CH.att++;S.streak=0;S.hearts--;updateHUD();mh();sfx('bad');
+    if(S.hearts<=0){S.stat[o.zi].t++;S.done++;finish();CH.dead=true;if(CH.mod.reveal)CH.mod.reveal();showFB('bad','Hết năng lượng!','Đáp án đúng đã được hiển thị.'+(ch.e?' '+ch.e:''));return}
+    if(CH.att>=o.maxAtt){
+      S.stat[o.zi].t++;S.done++;finish();CH.mod.reveal();
+      showFB('info','Đáp án đúng đã hiện ra.',(ch.e?ch.e:'')+' Hãy đọc kĩ để nhớ cho lần sau.');
+    }else{
+      showFB('bad','Chưa đúng.','Bạn mất 1 năng lượng, hãy thử lại. Còn '+(o.maxAtt-CH.att)+' lượt.');
+      CH.mod.retry();
+    }
+  }
+}
+function finish(){
+  CH.fin=true;clearInterval(CH.timer);
+  $('#chk').hidden=true;$('#back').hidden=true;$('#cont').hidden=false;$('#cont').focus();
+}
+$('#chk').onclick=function(){if(!CH||CH.fin||!CH.mod.check)return;onSubmit(CH.mod.check())};
+$('#cont').onclick=function(){
+  if(!CH)return;var cb=CH.cb,dead=CH.dead;clearInterval(CH.timer);$('#modal').hidden=true;modalOpen=false;CH=null;last=performance.now();
+  if(dead){endGame(false);return}
+  cb({solved:true});
+};
+$('#back').onclick=function(){
+  if(!CH||CH.fin)return;var cb=CH.cb;clearInterval(CH.timer);$('#modal').hidden=true;modalOpen=false;CH=null;last=performance.now();
+  cb({cancel:true});
+};
+function openGate(g){
+  var zname=g.boss?DATA[S.grade].boss:'Chương '+(g.zi+1)+' · '+S.zones[g.zi].name;
+  if(g.boss){bossNext(g);return}
+  runChallenge(g.ch,{zone:zname+' · Cổng '+(g.k+1)+'/3',zi:g.zi,pts:100,bonus:20,maxAtt:2},function(res){
+    if(res.cancel){S.hero.x-=70;g.cool=.8;return}
+    g.solved=true;if(g._t)g._t.classList.add('done');sfx('open');burst(g.x,WH/2,null,26);
+  });
+}
+function bossNext(g){
+  if(g.bi>=g.bq.length){g.solved=true;if(g._t)g._t.classList.add('done');endGame(true);return}
+  runChallenge(g.bq[g.bi],{zone:DATA[S.grade].boss+' · Câu '+(g.bi+1)+'/'+g.bq.length,zi:S.nZ,pts:50,bonus:10,maxAtt:1,more:g.bi<g.bq.length-1},function(res){
+    if(res.cancel){S.hero.x-=70;g.cool=.8;return}
+    g.bi++;bossNext(g);
+  });
+}
+
+/* ====================== KẾT THÚC ====================== */
+function fmtTime(s){s=Math.floor(s);var m=Math.floor(s/60),r=s%60;return m+':'+(r<10?'0':'')+r}
+function endGame(win){
+  S.over=true;paused=true;$('#tip').hidden=true;$('#pause').hidden=true;
+  var acc=S.done?S.firstTry/S.done:0,tier=acc>=.9?0:acc>=.75?1:acc>=.55?2:3;
+  var titles=['Kĩ sư Công nghệ','Thợ giỏi','Thợ khá','Thợ học việc'],rates=['Xuất sắc','Giỏi','Khá','Cần cố gắng thêm'],stars=[3,2,1,0][tier];
+  var id=Date.now();
+  if(win){
+    sfx('win');
+    var lb=lsGet('cn_lb',[]);lb.push({id:id,n:S.name,g:S.grade,s:S.score,av:S.av});
+    lb.sort(function(a,b){return b.s-a.s});lsSet('cn_lb',lb.slice(0,20));
+  }else sfx('bad');
+  var el=$('#end');el.innerHTML='';
+  var wrap=h('div','wrap gut');el.append(wrap);
+  var hd=h('div');hd.append(h('div','kicker',win?'Hoàn thành hành trình':'Lượt chơi kết thúc'),h('h1','title',win?'Chúc mừng!':'Hết năng lượng'));
+  wrap.append(hd);
+  var cert=h('div','cert');
+  cert.append(h('div','kicker','Giấy chứng nhận · Công nghệ '+S.grade+' · Kết nối tri thức'));
+  cert.append(h('div','who',S.av+' '+S.name));
+  if(win){
+    cert.append(h('div','stars',('★').repeat(stars)+('☆').repeat(3-stars)));
+    var rk=h('div','rank');rk.append(document.createTextNode('Xếp loại: '),h('span','',rates[tier]),document.createTextNode(' · '+titles[tier]));cert.append(rk);
+  }else{
+    cert.append(h('div','rank','Bạn đã đến '+(S.curZone<S.nZ?'Chương '+(S.curZone+1)+' · '+S.zones[S.curZone].name:DATA[S.grade].boss)+'. Ôn lại rồi thử lần nữa nhé!'));
+  }
+  var st=h('div','stats');
+  [[String(S.score),'Điểm'],[Math.round(acc*100)+'%','Đúng ngay lần đầu'],[fmtTime(S.time),'Thời gian'],[Math.max(0,S.hearts)+'/5','Năng lượng còn lại'],[String(S.coinsGot),'Sao thu được']].forEach(function(x){var d=h('div');d.append(h('b','',x[0]),h('small','',x[1]));st.append(d)});
+  cert.append(st);wrap.append(cert);
+  var rf=h('div','field');rf.append(h('span','lbl','Kết quả theo chương'));
+  var low=[];
+  S.stat.forEach(function(s,i){
+    if(!s.t)return;
+    var nm=i<S.nZ?'Chương '+(i+1)+' · '+S.zones[i].name:DATA[S.grade].boss;
+    var zr=h('div','zr');zr.append(h('span','',nm),h('b','',s.f+'/'+s.t));
+    var bar=h('div','bar'),fi=h('i',s.f<s.t?'low':'');fi.style.width=(s.f/s.t*100)+'%';bar.append(fi);zr.append(bar);rf.append(zr);
+    if(s.f<s.t)low.push(nm);
+  });
+  wrap.append(rf);
+  if(low.length){var rv=h('div','fb info');rv.append(h('b','','Nên ôn lại'),document.createTextNode(low.join('; ')+'.'));wrap.append(rv)}
+  var lbf=h('div','field');lbf.hidden=true;lbf.append(h('span','lbl','Bảng vàng trên máy này'));
+  var tb=h('table','lb'),th=h('thead'),tr0=h('tr');['Biệt danh','Lớp','Điểm'].forEach(function(t){tr0.append(h('th','',t))});th.append(tr0);var tbody=h('tbody');tb.append(th,tbody);lbf.append(tb);wrap.append(lbf);
+  renderLB(tbody,lbf,win?id:null);
+  var br=h('div','row2');
+  var b1=h('button','btn','Chơi lại');b1.type='button';b1.onclick=function(){startGame()};
+  var b2=h('button','btn ghost','Về trang chủ');b2.type='button';b2.onclick=function(){goHome()};
+  br.append(b1,b2);wrap.append(br);
+  var tbk=h('div','tblock');
+  [['Tác giả','Thầy Nguyễn Hải Nam'],['Đơn vị','Trường PTDTBT TH&THCS Lâm Hoá']].forEach(function(x){var d=h('div');d.append(h('b','',x[0]),document.createTextNode(x[1]));tbk.append(d)});
+  wrap.append(tbk);
+  $('#modal').hidden=true;$('#game').hidden=true;el.hidden=false;el.scrollTop=0;
+}
+
+/* ====================== KHỞI ĐỘNG ====================== */
+$('#go').onclick=startGame;
+$('#nick').addEventListener('keydown',function(e){if(e.key==='Enter')startGame()});
+buildStart();
+})();
+</script>
