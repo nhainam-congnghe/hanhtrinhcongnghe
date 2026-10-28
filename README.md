@@ -113,35 +113,8 @@ Màn hình kết thúc hiển thị **giấy chứng nhận** (tên, lớp, đi�
 
 Có thể giao học sinh chơi ở nhà bằng điện thoại của phụ huynh để ôn tập.
 
-## 8. Chạy và chỉnh sửa
 
-**Chạy thử trên máy:** tải `index.html`, bấm đúp mở bằng Chrome/Edge/Firefox/Safari (hoặc trình duyệt trên điện thoại).
-
-**Thêm/sửa câu hỏi:** mở `index.html` bằng trình soạn thảo văn bản, tìm biến `DATA` (theo lớp 6–9). Mỗi chương có mảng `ch:[...]`. Các hàm tạo câu hỏi:
-
-```js
-Q('Câu hỏi?', ['A','B','C','D'], 0, 'Giải thích')            // trắc nghiệm; 0 = chỉ số đáp án đúng
-TF('Đề dẫn', [['Phát biểu 1', true], ['Phát biểu 2', false]], 'Giải thích')   // đúng/sai
-MA('Ghép…', [['Vế trái','Vế phải'], …], 'Giải thích')         // ghép đôi
-OR('Sắp xếp…', ['Bước 1','Bước 2', …], 'Giải thích')          // sắp xếp (nhập theo thứ tự ĐÚNG)
-FI('Câu có ___ chỗ ___ trống', ['từ1','từ2'], ['từ1','từ2','từ nhiễu'], 'Giải thích')  // điền khuyết
-GR('Chọn tất cả…', ['Ô 1','Ô 2', …], [0,2], 'Giải thích')     // chọn ô; [0,2] = chỉ số các ô đúng
-SO('Phân loại…', ['Nhóm A','Nhóm B'], [['Thẻ',0], …], 'Giải thích')   // phân loại; số = chỉ số nhóm
-SC('Gợi ý…', 'TỪ KHOÁ', 'Giải thích')                         // giải mã từ khoá
-```
-
-> Xem các ví dụ có sẵn ngay trong tệp để sao chép đúng cú pháp. Trò chơi tự xáo thứ tự đáp án và tự bốc ngẫu nhiên, nên chỉ cần **thêm càng nhiều câu càng tốt** vào mỗi chương.
-
-**Kĩ thuật:** HTML5 Canvas 2D, JavaScript thuần (không thư viện), âm thanh tổng hợp bằng Web Audio, lưu dữ liệu bằng `localStorage` (`cn_lb` – bảng xếp hạng, `cn_last` – lựa chọn gần nhất, `cn_seen` – câu đã gặp), bố cục đáp ứng (responsive) cho máy tính và điện thoại.
-
-## 9. Đưa lên GitHub Pages (chạy công khai)
-
-1. Tạo repository công khai tên **`hanhtrinhcongnghe`** trên GitHub.
-2. Tải lên các tệp: `index.html`, `README.md`, thư mục `docs/`, tệp `.nojekyll`.
-3. Vào **Settings → Pages → Build and deployment → Source: Deploy from a branch → Branch: `main` / `/ (root)` → Save**.
-4. Sau 1–2 phút, game chạy tại `https://<tên-tài-khoản>.github.io/hanhtrinhcongnghe/`.
-
-## 10. Cấu trúc thư mục
+## 8. Cấu trúc thư mục
 
 ```
 hanhtrinhcongnghe/
@@ -151,12 +124,12 @@ hanhtrinhcongnghe/
 └── docs/img/       # ảnh minh hoạ
 ```
 
-## 11. Giới hạn và hướng phát triển
+## 9. Giới hạn và hướng phát triển
 
 - Bảng xếp hạng chỉ lưu trên từng thiết bị; có thể bổ sung nhập điểm tập trung (Google Form/Sheet) để thi đua toàn trường.
 - Mở rộng ngân hàng câu hỏi theo từng bài; thêm chế độ chơi theo đội, chế độ ôn đề kiểm tra.
 - Thu thập kết quả trước – sau để đánh giá hiệu quả (xem báo cáo sáng kiến).
 
-## 12. Bản quyền và lời cảm ơn
+## 10. Bản quyền và lời cảm ơn
 
-Sản phẩm phục vụ giáo dục, do Thầy Nguyễn Hải Nam – Trường PTDTBT TH&THCS Lâm Hoá xây dựng. Tên sách giáo khoa “Kết nối tri thức với cuộc sống” thuộc quyền của các nhà xuất bản; game chỉ dùng để ôn tập theo chương trình, không sao chép nguyên văn nội dung sách. Có thể dùng, chia sẻ trong nhà trường; vui lòng ghi nguồn tác giả.
+Sản phẩm phục vụ giáo dục, do Thầy Nguyễn Hải Nam – Trường PTDTBT TH&THCS Lâm Hoá xây dựng. Sử dung bộ sách giáo khoa “Kết nối tri thức với cuộc sống” thuộc quyền của các nhà xuất bản; game chỉ dùng để ôn tập kiến thức theo chương trình. Có thể dùng, chia sẻ trong nhà trường; vui lòng ghi nguồn tác giả.
