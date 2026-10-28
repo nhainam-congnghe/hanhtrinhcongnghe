@@ -8,10 +8,6 @@ Một tệp HTML duy nhất, chạy trực tiếp trên trình duyệt (máy tí
 - **Tác giả:** Thầy Nguyễn Hải Nam – Trường PTDTBT TH&THCS Lâm Hoá, xã Tuyên Lâm
 - **Đề tài sáng kiến:** “Đổi mới phương pháp dạy học môn Công nghệ THCS thông qua xây dựng và sử dụng trò chơi nhập vai 2D”
 
-| Máy tính | Điện thoại |
-|---|---|
-| ![desktop](docs/img/desktop-game.png) | ![mobile](docs/img/mobile-game.png) |
-
 ---
 
 ## 1. Mục đích
@@ -95,7 +91,7 @@ Màn hình kết thúc hiển thị **giấy chứng nhận** (tên, lớp, đi�
 
 ## 7. Cách thức triển khai trong dạy học
 
-**Quy trình 5 bước:** ![quy trình](docs/img/quy-trinh.png)
+**Quy trình 5 bước:**
 
 1. **Khởi động** (3–5 phút) – giáo viên giới thiệu chủ đề, mục tiêu.
 2. **Dạy kiến thức mới** theo giáo án như bình thường.
